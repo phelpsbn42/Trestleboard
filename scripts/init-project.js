@@ -11,8 +11,8 @@
  *   tb-init my-awesome-project --description "A great project"
  */
 
-const fs = require('fs');
 const path = require('path');
+const { LocalStorage } = require('./storage');
 
 // Directory structure for new projects (flat)
 const PROJECT_DIRECTORIES = [
@@ -101,13 +101,61 @@ ${metadata.project_name}/
 `;
 }
 
-// Export for testing
+/**
+ * Initialize a new project
+ * @param {string} projectName - Name of the project
+ * @param {object} options - Init options
+ * @param {string} options.description - Project description
+ * @param {string} options.cwd - Current working directory (defaults to process.cwd())
+ * @param {object} storage - Storage provider instance
+ * @returns {Promise<object>} Result with projectDir or error
+ */
+async function initProject(projectName, options = {}, storage = new LocalStorage()) {
+  const cwd = options.cwd || process.cwd();
+  const projectsDir = path.join(cwd, 'projects');
+  const projectDir = path.join(projectsDir, projectName);
+
+  // Check if project already exists
+  if (await storage.exists(projectDir)) {
+    return { error: `Project already exists: ${projectDir}` };
+  }
+
+  // Create directory structure
+  for (const dir of PROJECT_DIRECTORIES) {
+    const fullPath = path.join(projectDir, dir);
+    await storage.mkdir(fullPath);
+  }
+
+  // Create project metadata file
+  const metadata = createProjectMetadata(projectName, options.description);
+  const metadataPath = path.join(projectDir, 'project.json');
+  await storage.write(metadataPath, JSON.stringify(metadata, null, 2));
+
+  // Create a README for the project
+  const readme = createProjectReadme(metadata);
+  const readmePath = path.join(projectDir, 'README.md');
+  await storage.write(readmePath, readme);
+
+  // Create .gitkeep files in empty directories
+  for (const dir of PROJECT_DIRECTORIES) {
+    const gitkeepPath = path.join(projectDir, dir, '.gitkeep');
+    await storage.write(gitkeepPath, '');
+  }
+
+  return { projectDir, metadata };
+}
+
+// Export for testing and external use
 module.exports = {
   PROJECT_DIRECTORIES,
   isValidProjectName,
   toDisplayName,
   createProjectMetadata,
-  createProjectReadme
+  createProjectReadme,
+  initProject,
+  // Re-export storage for convenience
+  LocalStorage,
+  StorageProvider: require('./storage').StorageProvider
 };
 
 // Only run CLI when executed directly
@@ -132,51 +180,39 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  const projectsDir = path.join(process.cwd(), 'projects');
-  const projectDir = path.join(projectsDir, projectName);
-
-  // Check if project already exists
-  if (fs.existsSync(projectDir)) {
-    console.error(`Error: Project already exists: ${projectDir}`);
-    process.exit(1);
-  }
+  const projectDir = path.join(process.cwd(), 'projects', projectName);
 
   console.log(`Creating project: ${projectName}`);
   console.log(`Location: ${projectDir}`);
   console.log('');
 
-  // Create directory structure
-  for (const dir of PROJECT_DIRECTORIES) {
-    const fullPath = path.join(projectDir, dir);
-    fs.mkdirSync(fullPath, { recursive: true });
-    console.log(`  Created: ${dir}/`);
-  }
+  // Use the initProject function with default LocalStorage
+  initProject(projectName, { description: options.description })
+    .then(result => {
+      if (result.error) {
+        console.error(`Error: ${result.error}`);
+        process.exit(1);
+      }
 
-  // Create project metadata file
-  const metadata = createProjectMetadata(projectName, options.description);
-  const metadataPath = path.join(projectDir, 'project.json');
-  fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-  console.log(`  Created: project.json`);
+      // Log created items
+      for (const dir of PROJECT_DIRECTORIES) {
+        console.log(`  Created: ${dir}/`);
+      }
+      console.log(`  Created: project.json`);
+      console.log(`  Created: README.md`);
 
-  // Create a README for the project
-  const readme = createProjectReadme(metadata);
-  const readmePath = path.join(projectDir, 'README.md');
-  fs.writeFileSync(readmePath, readme);
-  console.log(`  Created: README.md`);
-
-  // Create .gitkeep files in empty directories
-  for (const dir of PROJECT_DIRECTORIES) {
-    const gitkeepPath = path.join(projectDir, dir, '.gitkeep');
-    fs.writeFileSync(gitkeepPath, '');
-  }
-
-  console.log('');
-  console.log('Project initialized successfully!');
-  console.log('');
-  console.log('Next steps:');
-  console.log(`  1. cd projects/${projectName}`);
-  console.log('  2. Add any input documents to input/');
-  console.log('  3. Start the Analyst persona:');
-  console.log('     claude --system-prompt ../../personas/analyst.md');
-  console.log('');
+      console.log('');
+      console.log('Project initialized successfully!');
+      console.log('');
+      console.log('Next steps:');
+      console.log(`  1. cd projects/${projectName}`);
+      console.log('  2. Add any input documents to input/');
+      console.log('  3. Start the Analyst persona:');
+      console.log('     claude --system-prompt ../../personas/analyst.md');
+      console.log('');
+    })
+    .catch(error => {
+      console.error(`Error: ${error.message}`);
+      process.exit(1);
+    });
 }

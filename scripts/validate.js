@@ -10,11 +10,11 @@
  *   tb-validate -d inception-deck.json -s inception-deck
  */
 
-const fs = require('fs');
 const path = require('path');
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 const { program } = require('commander');
+const { LocalStorage } = require('./storage');
 
 // Try to use chalk, fallback to plain text
 let chalk;
@@ -97,21 +97,22 @@ function formatValidationErrors(errors, verbose = false) {
  * Load and parse a schema file
  * @param {string} schemaType - Schema type name
  * @param {string} schemasDir - Path to schemas directory
+ * @param {object} storage - Storage provider instance
  * @returns {object} Result with schema or error
  */
-function loadSchema(schemaType, schemasDir) {
+function loadSchema(schemaType, schemasDir, storage = new LocalStorage()) {
   if (!schemaTypes.includes(schemaType)) {
     return { error: `Invalid schema type. Must be one of: ${schemaTypes.join(', ')}` };
   }
 
   const schemaPath = path.join(schemasDir, `${schemaType}.schema.json`);
 
-  if (!fs.existsSync(schemaPath)) {
+  if (!storage.existsSync(schemaPath)) {
     return { error: `Schema file not found: ${schemaPath}` };
   }
 
   try {
-    const schemaContent = fs.readFileSync(schemaPath, 'utf-8');
+    const schemaContent = storage.readSync(schemaPath);
     return { schema: JSON.parse(schemaContent), schemaPath };
   } catch (e) {
     return { error: `Invalid schema JSON: ${e.message}` };
@@ -135,12 +136,12 @@ function parseData(jsonString) {
 // CLI Main Function (handles I/O)
 // =============================================================================
 
-async function main(options) {
+async function main(options, storage = new LocalStorage()) {
   const cwd = process.cwd();
   const schemasDir = path.join(cwd, 'schemas');
 
   // Load schema
-  const schemaResult = loadSchema(options.schema, schemasDir);
+  const schemaResult = loadSchema(options.schema, schemasDir, storage);
   if (schemaResult.error) {
     console.error(chalk.red(`Error: ${schemaResult.error}`));
     process.exit(1);
@@ -148,9 +149,9 @@ async function main(options) {
 
   // Find data file
   let dataPath = options.data;
-  if (!fs.existsSync(dataPath)) {
+  if (!await storage.exists(dataPath)) {
     const cwdPath = path.join(cwd, dataPath);
-    if (fs.existsSync(cwdPath)) {
+    if (await storage.exists(cwdPath)) {
       dataPath = cwdPath;
     } else {
       console.error(chalk.red(`Error: Data file not found: ${dataPath}`));
@@ -159,7 +160,7 @@ async function main(options) {
   }
 
   // Load and parse data
-  const dataContent = fs.readFileSync(dataPath, 'utf-8');
+  const dataContent = await storage.read(dataPath);
   const dataResult = parseData(dataContent);
   if (dataResult.error) {
     console.error(chalk.red(`Error: ${dataResult.error}`));
@@ -250,7 +251,7 @@ function showDataSummary(data, schemaType) {
   console.log('');
 }
 
-// Export for testing
+// Export for testing and external use
 module.exports = {
   showDataSummary,
   schemaTypes,
@@ -258,7 +259,11 @@ module.exports = {
   validateData,
   formatValidationErrors,
   loadSchema,
-  parseData
+  parseData,
+  main,
+  // Re-export storage for convenience
+  LocalStorage,
+  StorageProvider: require('./storage').StorageProvider
 };
 
 // Only run main when executed directly

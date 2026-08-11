@@ -11,10 +11,10 @@
  *   tb-render -t templates/inception-deck/inception-deck.md -d project-data.json -o output.md
  */
 
-const fs = require('fs');
 const path = require('path');
 const Handlebars = require('handlebars');
 const { program } = require('commander');
+const { LocalStorage } = require('./storage');
 
 // Configure program (but don't parse yet - that happens at the bottom when run directly)
 program
@@ -80,25 +80,26 @@ function registerPartial(name, content) {
  * @param {string} dataPath - The data file path
  * @param {string} projectName - The project name
  * @param {string} cwd - Current working directory
+ * @param {object} storage - Storage provider instance
  * @returns {object} Resolved paths or null if project not found
  */
-function resolveProjectPaths(dataPath, projectName, cwd) {
+function resolveProjectPaths(dataPath, projectName, cwd, storage = new LocalStorage()) {
   const projectDir = path.join(cwd, 'projects', projectName);
 
-  if (!fs.existsSync(projectDir)) {
+  if (!storage.existsSync(projectDir)) {
     return { error: `Project directory not found: ${projectDir}` };
   }
 
   let resolvedDataPath = dataPath;
 
   // If data path is relative and doesn't exist, try project directories
-  if (!path.isAbsolute(dataPath) && !fs.existsSync(dataPath)) {
+  if (!path.isAbsolute(dataPath) && !storage.existsSync(dataPath)) {
     const possiblePaths = [
       path.join(projectDir, 'output', dataPath),
       path.join(projectDir, 'input', dataPath),
     ];
     for (const p of possiblePaths) {
-      if (fs.existsSync(p)) {
+      if (storage.existsSync(p)) {
         resolvedDataPath = p;
         break;
       }
@@ -112,16 +113,17 @@ function resolveProjectPaths(dataPath, projectName, cwd) {
  * Resolve template path
  * @param {string} templatePath - The template file path
  * @param {string} cwd - Current working directory
+ * @param {object} storage - Storage provider instance
  * @returns {object} Resolved path or error
  */
-function resolveTemplatePath(templatePath, cwd) {
-  if (fs.existsSync(templatePath)) {
+function resolveTemplatePath(templatePath, cwd, storage = new LocalStorage()) {
+  if (storage.existsSync(templatePath)) {
     return { templatePath };
   }
 
   // Try relative to templates directory
   const templatesPath = path.join(cwd, 'templates', templatePath);
-  if (fs.existsSync(templatesPath)) {
+  if (storage.existsSync(templatesPath)) {
     return { templatePath: templatesPath };
   }
 
@@ -132,7 +134,7 @@ function resolveTemplatePath(templatePath, cwd) {
 // CLI Main Function (handles I/O)
 // =============================================================================
 
-async function main(options) {
+async function main(options, storage = new LocalStorage()) {
   try {
     // Resolve paths
     let templatePath = options.template;
@@ -142,7 +144,7 @@ async function main(options) {
 
     // If project is specified, resolve paths relative to project
     if (options.project) {
-      const resolved = resolveProjectPaths(dataPath, options.project, cwd);
+      const resolved = resolveProjectPaths(dataPath, options.project, cwd, storage);
       if (resolved.error) {
         console.error(`Error: ${resolved.error}`);
         process.exit(1);
@@ -151,7 +153,7 @@ async function main(options) {
     }
 
     // Resolve template path
-    const templateResolved = resolveTemplatePath(templatePath, cwd);
+    const templateResolved = resolveTemplatePath(templatePath, cwd, storage);
     if (templateResolved.error) {
       console.error(`Error: ${templateResolved.error}`);
       process.exit(1);
@@ -159,14 +161,14 @@ async function main(options) {
     templatePath = templateResolved.templatePath;
 
     // Read template
-    const templateContent = fs.readFileSync(templatePath, 'utf-8');
+    const templateContent = await storage.read(templatePath);
 
     // Read and parse data
-    if (!fs.existsSync(dataPath)) {
+    if (!await storage.exists(dataPath)) {
       console.error(`Error: Data file not found: ${dataPath}`);
       process.exit(1);
     }
-    const dataContent = fs.readFileSync(dataPath, 'utf-8');
+    const dataContent = await storage.read(dataPath);
 
     let data;
     try {
@@ -179,9 +181,9 @@ async function main(options) {
     // Register any partial templates
     if (options.partial) {
       for (const partialPath of options.partial) {
-        if (fs.existsSync(partialPath)) {
+        if (await storage.exists(partialPath)) {
           const partialName = path.basename(partialPath, path.extname(partialPath));
-          const partialContent = fs.readFileSync(partialPath, 'utf-8');
+          const partialContent = await storage.read(partialPath);
           registerPartial(partialName, partialContent);
         }
       }
@@ -194,10 +196,10 @@ async function main(options) {
     if (outputPath) {
       // Ensure output directory exists
       const outputDir = path.dirname(outputPath);
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+      if (!await storage.exists(outputDir)) {
+        await storage.mkdir(outputDir);
       }
-      fs.writeFileSync(outputPath, rendered);
+      await storage.write(outputPath, rendered);
       console.log(`Rendered: ${outputPath}`);
     } else {
       console.log(rendered);
@@ -356,7 +358,7 @@ function registerHelpers() {
   });
 }
 
-// Export for testing
+// Export for testing and external use
 module.exports = {
   registerHelpers,
   Handlebars,
@@ -364,7 +366,11 @@ module.exports = {
   parseJsonData,
   registerPartial,
   resolveProjectPaths,
-  resolveTemplatePath
+  resolveTemplatePath,
+  main,
+  // Re-export storage for convenience
+  LocalStorage,
+  StorageProvider: require('./storage').StorageProvider
 };
 
 // Only run main when executed directly (not when required as a module)
