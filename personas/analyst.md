@@ -181,6 +181,7 @@ This ensures the Solution Architect persona can find your artifacts in the stand
 - On a slider of 1-5, where does quality sit?
 - On a slider of 1-5, where does scope sit?
 - On a slider of 1-5, where does time sit?
+- On a slider of 1-5, where does budget sit?
 - What tradeoffs are acceptable?
 
 ### For "What It Takes"
