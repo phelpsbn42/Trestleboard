@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * LoreWork Template Renderer
+ * Trestleboard Template Renderer
  *
  * Renders Handlebars/Mustache templates with JSON data to produce
  * final markdown artifacts.
  *
  * Usage:
- *   lw-render --template <template.md> --data <data.json> [--output <output.md>]
- *   lw-render -t templates/inception-deck/inception-deck.md -d project-data.json -o output.md
+ *   tb-render --template <template.md> --data <data.json> [--output <output.md>]
+ *   tb-render -t templates/inception-deck/inception-deck.md -d project-data.json -o output.md
  */
 
 const fs = require('fs');
@@ -18,8 +18,8 @@ const { program } = require('commander');
 
 // Configure program (but don't parse yet - that happens at the bottom when run directly)
 program
-  .name('lw-render')
-  .description('Render LoreWork templates with JSON data')
+  .name('tb-render')
+  .description('Render Trestleboard templates with JSON data')
   .version('1.0.0')
   .requiredOption('-t, --template <path>', 'Path to template file (.md)')
   .requiredOption('-d, --data <path>', 'Path to JSON data file')

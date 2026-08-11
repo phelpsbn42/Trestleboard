@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://lorework.local/schemas/inception-deck.schema.json",
+  "$id": "https://trestleboard.local/schemas/inception-deck.schema.json",
   "title": "Inception Deck",
   "description": "Schema for Agile Inception Deck data",
   "type": "object",

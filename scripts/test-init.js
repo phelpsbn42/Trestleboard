@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * LoreWork Project Initializer Tests
+ * Trestleboard Project Initializer Tests
  *
  * Unit tests for the project initialization script.
  *
@@ -265,7 +265,7 @@ describe('createProjectReadme', () => {
 // =============================================================================
 
 console.log('\n========================================');
-console.log('LoreWork Init Tests');
+console.log('Trestleboard Init Tests');
 console.log('========================================');
 
 console.log('\n========================================');

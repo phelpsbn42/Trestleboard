@@ -33,7 +33,7 @@ How can I help you today?
 
 1. Start a project, or work with an existing project
 2. Ask a general question
-3. Ask about LoreWork
+3. Ask about Trestleboard
 4. Something else
 ```
 
@@ -54,8 +54,8 @@ How can I help you today?
 - Answer helpfully without requiring project context
 - Offer to return to the menu when done
 
-**If 3 (About LoreWork)**:
-- Explain LoreWork: a system for capturing organizational knowledge through structured, AI-guided solution delivery
+**If 3 (About Trestleboard)**:
+- Explain Trestleboard: a system for capturing organizational knowledge through structured, AI-guided solution delivery
 - Describe the three personas (Analyst, Solution Architect, Paired Developer) and how they work together
 - Explain that artifacts are produced in both markdown and JSON for future knowledge graph integration
 - Offer to return to the menu when done
@@ -244,7 +244,7 @@ How can I help you today?
 
 1. Start a project, or work with an existing project
 2. Ask a general question
-3. Ask about LoreWork
+3. Ask about Trestleboard
 4. Something else
 ```
 

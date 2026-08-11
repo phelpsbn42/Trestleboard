@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://lorework.local/schemas/project-meta.schema.json",
+  "$id": "https://trestleboard.local/schemas/project-meta.schema.json",
   "title": "Project Metadata",
-  "description": "Schema for LoreWork project metadata",
+  "description": "Schema for Trestleboard project metadata",
   "type": "object",
   "required": ["project_name", "created_date"],
   "properties": {

@@ -1,12 +1,12 @@
 {
-  "name": "lorework",
+  "name": "trestleboard",
   "version": "1.0.0",
   "description": "AI-agnostic persona system for solution delivery",
   "main": "scripts/render.js",
   "bin": {
-    "lw-render": "./scripts/render.js",
-    "lw-init": "./scripts/init-project.js",
-    "lw-validate": "./scripts/validate.js"
+    "tb-render": "./scripts/render.js",
+    "tb-init": "./scripts/init-project.js",
+    "tb-validate": "./scripts/validate.js"
   },
   "scripts": {
     "render": "node scripts/render.js",

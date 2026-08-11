@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-This guide will help you get started with LoreWork and the AI-powered personas.
+This guide will help you get started with Trestleboard and the AI-powered personas.
 
 ## Table of Contents
 
@@ -9,7 +9,7 @@ This guide will help you get started with LoreWork and the AI-powered personas.
   - [Claude CLI](#claude-cli-anthropic)
   - [Gemini CLI](#gemini-cli-google)
   - [GitHub Copilot CLI](#github-copilot-cli)
-- [Setting Up LoreWork](#setting-up-lorework)
+- [Setting Up Trestleboard](#setting-up-trestleboard)
 - [Your First Project](#your-first-project)
 - [Using Each Persona](#using-each-persona)
 - [Tips and Best Practices](#tips-and-best-practices)
@@ -26,7 +26,7 @@ This guide will help you get started with LoreWork and the AI-powered personas.
 
 ## Choose Your AI CLI
 
-LoreWork is **AI-agnostic**. Choose whichever CLI tool works best for you:
+Trestleboard is **AI-agnostic**. Choose whichever CLI tool works best for you:
 
 | CLI | Provider | Best For |
 |-----|----------|----------|
@@ -66,7 +66,7 @@ claude auth login
 export ANTHROPIC_API_KEY=your-api-key-here
 ```
 
-### Usage with LoreWork
+### Usage with Trestleboard
 
 ```bash
 # Start with a persona
@@ -119,7 +119,7 @@ gcloud auth application-default login
 export GEMINI_API_KEY=your-api-key-here
 ```
 
-### Usage with LoreWork
+### Usage with Trestleboard
 
 ```bash
 # Start with a persona (pass system instruction inline)
@@ -173,7 +173,7 @@ gh auth login
 gh auth refresh -s copilot
 ```
 
-### Usage with LoreWork
+### Usage with Trestleboard
 
 ```bash
 # Explain mode with persona context
@@ -205,13 +205,13 @@ gh copilot suggest --system-prompt "$(cat personas/paired-developer.md)"
 
 ---
 
-## Setting Up LoreWork
+## Setting Up Trestleboard
 
 ### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
-cd LoreWork
+cd Trestleboard
 ```
 
 ### 2. Explore the Structure
@@ -242,7 +242,7 @@ This installs the template renderer and validation tools.
 
 ```bash
 # Using the init script (recommended)
-npm run init -- my-first-project --description "My first LoreWork project"
+npm run init -- my-first-project --description "My first Trestleboard project"
 
 # Or manually
 mkdir -p projects/my-first-project/{input,output/{inception-deck,specification,development}}

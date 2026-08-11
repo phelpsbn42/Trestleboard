@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * LoreWork JSON Schema Validator
+ * Trestleboard JSON Schema Validator
  *
- * Validates JSON data files against LoreWork schemas.
+ * Validates JSON data files against Trestleboard schemas.
  *
  * Usage:
- *   lw-validate --data <data.json> --schema <schema-type>
- *   lw-validate -d inception-deck.json -s inception-deck
+ *   tb-validate --data <data.json> --schema <schema-type>
+ *   tb-validate -d inception-deck.json -s inception-deck
  */
 
 const fs = require('fs');
@@ -33,8 +33,8 @@ try {
 
 // Configure program (but don't parse yet - that happens at the bottom when run directly)
 program
-  .name('lw-validate')
-  .description('Validate JSON data against LoreWork schemas')
+  .name('tb-validate')
+  .description('Validate JSON data against Trestleboard schemas')
   .version('1.0.0')
   .requiredOption('-d, --data <path>', 'Path to JSON data file')
   .requiredOption('-s, --schema <type>', 'Schema type: project-meta, inception-deck, specification, development')

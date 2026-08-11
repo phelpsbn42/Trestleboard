@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * LoreWork Project Initializer
+ * Trestleboard Project Initializer
  *
  * Creates a new project with the standard directory structure
  * and optionally initializes with metadata.
  *
  * Usage:
- *   lw-init <project-name>
- *   lw-init my-awesome-project --description "A great project"
+ *   tb-init <project-name>
+ *   tb-init my-awesome-project --description "A great project"
  */
 
 const fs = require('fs');
@@ -115,8 +115,8 @@ if (require.main === module) {
   const { program } = require('commander');
 
   program
-    .name('lw-init')
-    .description('Initialize a new LoreWork project')
+    .name('tb-init')
+    .description('Initialize a new Trestleboard project')
     .version('1.0.0')
     .argument('<project-name>', 'Name of the project (lowercase, hyphens allowed)')
     .option('-d, --description <text>', 'Project description')

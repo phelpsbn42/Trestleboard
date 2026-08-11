@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://lorework.local/schemas/specification.schema.json",
+  "$id": "https://trestleboard.local/schemas/specification.schema.json",
   "title": "Specification",
   "description": "Schema for technical specification artifacts",
   "type": "object",

@@ -1,4 +1,4 @@
-# LoreWork Configuration
+# Trestleboard Configuration
 # Controls how and where artifacts are stored and retrieved.
 
 # Storage backend configuration
@@ -8,18 +8,18 @@ storage:
 
   # Filesystem settings (used when backend: filesystem)
   filesystem:
-    # Base path for projects (relative to LoreWork root)
+    # Base path for projects (relative to Trestleboard root)
     projects_path: projects
 
   # Database settings (used when backend: database)
   # database:
   #   connection_string: ""
-  #   schema: lorework
+  #   schema: trestleboard
 
   # SharePoint settings (used when backend: sharepoint)
   # sharepoint:
   #   site_url: ""
-  #   library: "LoreWork Documents"
+  #   library: "Trestleboard Documents"
   #   client_id: ""
   #   tenant_id: ""
 

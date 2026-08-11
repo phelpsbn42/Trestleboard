@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * LoreWork Renderer Tests
+ * Trestleboard Renderer Tests
  *
  * Unit tests for the template renderer and Handlebars helpers.
  *
@@ -617,7 +617,7 @@ describe('resolveProjectPaths', () => {
 
   test('returns dataPath unchanged for absolute paths', () => {
     // Create a temp project for testing
-    const tempDir = path.join(os.tmpdir(), 'lorework-test-' + Date.now());
+    const tempDir = path.join(os.tmpdir(), 'trestleboard-test-' + Date.now());
     const projectDir = path.join(tempDir, 'projects', 'test-project');
     fs.mkdirSync(projectDir, { recursive: true });
 
@@ -637,7 +637,7 @@ describe('resolveProjectPaths', () => {
 // =============================================================================
 
 console.log('\n========================================');
-console.log('LoreWork Renderer Tests');
+console.log('Trestleboard Renderer Tests');
 console.log('========================================');
 
 // Tests are run during description/test calls above

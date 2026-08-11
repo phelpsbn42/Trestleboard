@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="LoreWork.png" alt="LoreWork Logo" width="300">
+  <img src="Trestleboard.png" alt="Trestleboard Logo" width="300">
 </p>
 
-<h1 align="center">LoreWork</h1>
+<h1 align="center">Trestleboard</h1>
 
 <p align="center">
   <strong>Capture organizational knowledge through structured, AI-guided solution delivery</strong>
@@ -21,7 +21,7 @@
 
 ## Overview
 
-LoreWork uses AI-powered personas to guide you through software solution delivery—but **the real value isn't the workflow, it's the knowledge you capture along the way.**
+Trestleboard uses AI-powered personas to guide you through software solution delivery—but **the real value isn't the workflow, it's the knowledge you capture along the way.**
 
 Every project generates consistent, structured artifacts: business context, technical specifications, architectural decisions, risk assessments. Over time, this becomes a queryable corpus of your organization's collective intelligence.
 
@@ -68,7 +68,7 @@ The personas are designed as a workflow—Analyst feeds Solution Architect feeds
 Use them as a complete workflow, or consult individual personas for specific tasks.
 
 ### A Way to Start with AI
-If you're curious about working with AI but unsure where to begin, LoreWork provides structure. The personas guide structured conversations rather than open-ended prompting, so you always know what to ask next. You'll learn:
+If you're curious about working with AI but unsure where to begin, Trestleboard provides structure. The personas guide structured conversations rather than open-ended prompting, so you always know what to ask next. You'll learn:
 
 - How to have productive conversations with AI tools
 - What good prompts look like (the personas *are* the prompts)
@@ -152,7 +152,7 @@ See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
 1. **Clone this repository**
    ```bash
    git clone <repository-url>
-   cd LoreWork
+   cd Trestleboard
    ```
 
 2. **Start with the Analyst** (choose your preferred CLI)
@@ -173,7 +173,7 @@ See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
 
 ## AI CLI Tools
 
-LoreWork is **AI-agnostic**. Use whichever CLI tool you prefer:
+Trestleboard is **AI-agnostic**. Use whichever CLI tool you prefer:
 
 ### Claude CLI (Anthropic)
 
@@ -193,7 +193,7 @@ claude auth login
 export ANTHROPIC_API_KEY=your-api-key
 ```
 
-**Usage with LoreWork:**
+**Usage with Trestleboard:**
 ```bash
 # Start with a persona
 claude --system-prompt personas/analyst.md
@@ -235,7 +235,7 @@ gcloud auth login
 export GEMINI_API_KEY=your-api-key
 ```
 
-**Usage with LoreWork:**
+**Usage with Trestleboard:**
 ```bash
 # Start with a persona (inline system instruction)
 gemini --system-instruction "$(cat personas/analyst.md)"
@@ -264,7 +264,7 @@ gh extension install github/gh-copilot
 gh auth login
 ```
 
-**Usage with LoreWork:**
+**Usage with Trestleboard:**
 ```bash
 # Use with explain command
 gh copilot explain --system-prompt personas/analyst.md
@@ -365,11 +365,11 @@ If a downstream persona detects contradictions with upstream artifacts:
 ## Project Structure
 
 ```
-LoreWork/
+Trestleboard/
 ├── README.md
 ├── QUICKSTART.md
-├── lorework.yaml              # Configuration (storage backend, paths)
-├── LoreWork.png
+├── trestleboard.yaml          # Configuration (storage backend, paths)
+├── Trestleboard.png
 │
 ├── personas/
 │   ├── analyst.md              # Discovery & Inception Deck
@@ -458,12 +458,12 @@ The Paired Developer enforces strict Test-Driven Development:
 
 ## Artifact Renderer
 
-LoreWork includes Node.js tools for rendering templates and managing projects.
+Trestleboard includes Node.js tools for rendering templates and managing projects.
 
 ### Installation
 
 ```bash
-cd LoreWork
+cd Trestleboard
 npm install
 ```
 

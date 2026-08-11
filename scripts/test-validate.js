@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * LoreWork Validator Tests
+ * Trestleboard Validator Tests
  *
  * Unit tests for the JSON schema validator.
  *
@@ -125,12 +125,12 @@ describe('Schema Structure', () => {
     }
   });
 
-  test('all schemas have $id property with lorework.local', () => {
+  test('all schemas have $id property with trestleboard.local', () => {
     for (const type of schemaTypes) {
       const schemaPath = path.join(schemasDir, `${type}.schema.json`);
       const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf-8'));
       assert(schema.$id, `Schema ${type} missing $id property`);
-      assert(schema.$id.includes('lorework.local'), `Schema ${type} $id should contain lorework.local`);
+      assert(schema.$id.includes('trestleboard.local'), `Schema ${type} $id should contain trestleboard.local`);
     }
   });
 
@@ -469,7 +469,7 @@ describe('parseData', () => {
 // =============================================================================
 
 console.log('\n========================================');
-console.log('LoreWork Validator Tests');
+console.log('Trestleboard Validator Tests');
 console.log('========================================');
 
 console.log('\n========================================');

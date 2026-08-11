@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://lorework.local/schemas/development.schema.json",
+  "$id": "https://trestleboard.local/schemas/development.schema.json",
   "title": "Development",
   "description": "Schema for development artifacts",
   "type": "object",
