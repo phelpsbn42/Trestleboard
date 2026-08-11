@@ -13,12 +13,7 @@
 
 const path = require('path');
 const { LocalStorage } = require('./storage');
-
-// Directory structure for new projects (flat)
-const PROJECT_DIRECTORIES = [
-  'input',
-  'output'
-];
+const { PROJECT_DIRECTORIES } = require('./config');
 
 // Validate project name format
 function isValidProjectName(name) {

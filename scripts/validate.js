@@ -15,6 +15,8 @@ const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 const { program } = require('commander');
 const { LocalStorage } = require('./storage');
+const { SCHEMA_TYPES } = require('./config');
+const { getSummaryLines } = require('./formatters');
 
 // Try to use chalk, fallback to plain text
 let chalk;
@@ -40,7 +42,8 @@ program
   .requiredOption('-s, --schema <type>', 'Schema type: project-meta, inception-deck, specification, development')
   .option('-v, --verbose', 'Show detailed validation errors');
 
-const schemaTypes = ['project-meta', 'inception-deck', 'specification', 'development'];
+// Use schema types from config (exported for backward compatibility)
+const schemaTypes = SCHEMA_TYPES;
 
 // =============================================================================
 // Core Functions (testable, no I/O side effects)
@@ -192,60 +195,16 @@ async function main(options, storage = new LocalStorage()) {
   }
 }
 
+/**
+ * Show data summary using schema-specific formatter
+ * Uses strategy pattern - add new formatters in formatters/summary.js
+ */
 function showDataSummary(data, schemaType) {
   console.log(chalk.bold('Summary:'));
 
-  switch (schemaType) {
-    case 'project-meta':
-      console.log(`  Project: ${data.project_name || 'N/A'}`);
-      console.log(`  Status: ${data.status || 'N/A'}`);
-      console.log(`  Created: ${data.created_date || 'N/A'}`);
-      if (data.team) {
-        console.log(`  Team: ${data.team.length} members`);
-      }
-      break;
-
-    case 'inception-deck':
-      console.log(`  Project: ${data.project_name || 'N/A'}`);
-      const sections = [
-        'section_1_why_are_we_here',
-        'section_2_elevator_pitch',
-        'section_3_product_box',
-        'section_4_not_list',
-        'section_5_meet_neighbors',
-        'section_6_show_solution',
-        'section_7_risks',
-        'section_8_sizing',
-        'section_9_tradeoffs',
-        'section_10_what_it_takes'
-      ];
-      const completedSections = sections.filter(s => data[s] && Object.keys(data[s]).length > 0);
-      console.log(`  Sections: ${completedSections.length}/10 completed`);
-      if (data.section_7_risks && data.section_7_risks.risks) {
-        console.log(`  Risks: ${data.section_7_risks.risks.length} identified`);
-      }
-      break;
-
-    case 'specification':
-      console.log(`  Project: ${data.project_name || 'N/A'}`);
-      if (data.use_cases && data.use_cases.use_cases) {
-        console.log(`  Use Cases: ${data.use_cases.use_cases.length}`);
-      }
-      if (data.adrs) {
-        console.log(`  ADRs: ${data.adrs.length}`);
-      }
-      break;
-
-    case 'development':
-      console.log(`  Project: ${data.project_name || 'N/A'}`);
-      if (data.task_breakdown && data.task_breakdown.tasks) {
-        const tasks = data.task_breakdown.tasks;
-        const completed = tasks.filter(t => t.status === 'done').length;
-        const totalPoints = tasks.reduce((sum, t) => sum + (t.points || 0), 0);
-        console.log(`  Tasks: ${completed}/${tasks.length} completed`);
-        console.log(`  Story Points: ${totalPoints}`);
-      }
-      break;
+  const lines = getSummaryLines(data, schemaType);
+  for (const line of lines) {
+    console.log(line);
   }
 
   console.log('');

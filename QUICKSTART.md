@@ -32,7 +32,9 @@ Trestleboard is **AI-agnostic**. Choose whichever CLI tool works best for you:
 |-----|----------|----------|
 | Claude CLI | Anthropic | Deep reasoning, long context |
 | Gemini CLI | Google | Google Cloud integration |
-| GitHub Copilot | GitHub/Microsoft | VS Code users, GitHub integration |
+| GitHub Copilot CLI | GitHub/Microsoft | VS Code users, GitHub integration |
+
+> **Important:** Trestleboard is designed for **AI CLI tools** that can load system prompts and access the filesystem. The personas work best with CLI tools that support `--system-prompt` or equivalent flags. Web interfaces can use the personas but require manual artifact handling.
 
 ---
 

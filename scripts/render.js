@@ -15,6 +15,7 @@ const path = require('path');
 const Handlebars = require('handlebars');
 const { program } = require('commander');
 const { LocalStorage } = require('./storage');
+const { registerAllHelpers } = require('./helpers');
 
 // Configure program (but don't parse yet - that happens at the bottom when run directly)
 program
@@ -213,149 +214,10 @@ async function main(options, storage = new LocalStorage()) {
 
 /**
  * Register custom Handlebars helpers
+ * Uses the categorized helpers registry for better organization.
  */
 function registerHelpers() {
-  // Format date
-  Handlebars.registerHelper('formatDate', function(date) {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toISOString().split('T')[0];
-  });
-
-  // Conditional equality
-  Handlebars.registerHelper('eq', function(a, b) {
-    return a === b;
-  });
-
-  // Greater than
-  Handlebars.registerHelper('gt', function(a, b) {
-    return a > b;
-  });
-
-  // Less than
-  Handlebars.registerHelper('lt', function(a, b) {
-    return a < b;
-  });
-
-  // Increment
-  Handlebars.registerHelper('inc', function(value) {
-    return parseInt(value) + 1;
-  });
-
-  // Join array with delimiter
-  Handlebars.registerHelper('join', function(array, delimiter, options) {
-    if (!Array.isArray(array)) return '';
-    // If delimiter is the Handlebars options object, use default
-    const sep = (typeof delimiter === 'string') ? delimiter : ', ';
-    return array.join(sep);
-  });
-
-  // Repeat block n times
-  Handlebars.registerHelper('times', function(n, block) {
-    let result = '';
-    for (let i = 0; i < n; i++) {
-      result += block.fn({ index: i, num: i + 1 });
-    }
-    return result;
-  });
-
-  // Default value if undefined
-  Handlebars.registerHelper('default', function(value, defaultValue) {
-    return value !== undefined && value !== null ? value : defaultValue;
-  });
-
-  // Markdown checkbox
-  Handlebars.registerHelper('checkbox', function(checked) {
-    return checked ? '[x]' : '[ ]';
-  });
-
-  // Risk score color/level
-  Handlebars.registerHelper('riskLevel', function(score) {
-    if (score >= 15) return 'High';
-    if (score >= 8) return 'Medium';
-    return 'Low';
-  });
-
-  // Story points badge
-  Handlebars.registerHelper('pointsBadge', function(points) {
-    const badges = {
-      1: '🟢',
-      2: '🟢',
-      3: '🟡',
-      5: '🟠',
-      8: '🔴',
-      13: '🔴',
-      21: '⚫'
-    };
-    return badges[points] || '⚪';
-  });
-
-  // Tradeoff slider visualization
-  Handlebars.registerHelper('slider', function(value) {
-    const positions = ['', '↑', '', '↑', '', '↑', '', '↑', '', '↑', ''];
-    let slider = '  1 -------- 2 -------- 3 -------- 4 -------- 5';
-    // This is a simplified version - the template can format this better
-    return `${value}`;
-  });
-
-  // Uppercase
-  Handlebars.registerHelper('uppercase', function(str) {
-    return str ? str.toUpperCase() : '';
-  });
-
-  // Lowercase
-  Handlebars.registerHelper('lowercase', function(str) {
-    return str ? str.toLowerCase() : '';
-  });
-
-  // Capitalize first letter
-  Handlebars.registerHelper('capitalize', function(str) {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  });
-
-  // Pluralize
-  Handlebars.registerHelper('pluralize', function(count, singular, plural, options) {
-    // If plural is the Handlebars options object, use default pluralization
-    const pluralForm = (typeof plural === 'string') ? plural : singular + 's';
-    return count === 1 ? singular : pluralForm;
-  });
-
-  // Length of array
-  Handlebars.registerHelper('length', function(array) {
-    return Array.isArray(array) ? array.length : 0;
-  });
-
-  // Sum array of numbers or property
-  Handlebars.registerHelper('sum', function(array, property, options) {
-    if (!Array.isArray(array)) return 0;
-    // If property is a string (not Handlebars options object), sum that property
-    if (typeof property === 'string') {
-      return array.reduce((sum, item) => sum + (item[property] || 0), 0);
-    }
-    // Otherwise sum the array values directly
-    return array.reduce((sum, item) => sum + (item || 0), 0);
-  });
-
-  // Lookup helper for dynamic property access
-  Handlebars.registerHelper('lookup', function(obj, key) {
-    return obj && obj[key];
-  });
-
-  // JSON stringify for debugging
-  Handlebars.registerHelper('json', function(context) {
-    return new Handlebars.SafeString(JSON.stringify(context, null, 2));
-  });
-
-  // Mermaid diagram wrapper
-  Handlebars.registerHelper('mermaid', function(options) {
-    return '```mermaid\n' + options.fn(this) + '\n```';
-  });
-
-  // Code block wrapper
-  Handlebars.registerHelper('codeblock', function(language, options) {
-    return '```' + language + '\n' + options.fn(this) + '\n```';
-  });
+  registerAllHelpers(Handlebars);
 }
 
 // Export for testing and external use

@@ -21,6 +21,8 @@
 
 ## Overview
 
+> **Designed for CLI Tools:** Trestleboard is built for AI CLI tools (Claude CLI, Gemini CLI, GitHub Copilot CLI) that support system prompts and filesystem access. These tools can load personas directly and read/write artifacts automatically. While the personas work in web interfaces, you'll need to manually handle artifact chaining.
+
 Trestleboard uses AI-powered personas to guide you through software solution delivery—but **the real value isn't the workflow, it's the knowledge you capture along the way.**
 
 Every project generates consistent, structured artifacts: business context, technical specifications, architectural decisions, risk assessments. Over time, this becomes a queryable corpus of your organization's collective intelligence.
@@ -144,8 +146,10 @@ See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
 
 ### Prerequisites
 
-- Any AI CLI tool (Claude, Gemini, or GitHub Copilot)
+- Any AI CLI tool (Claude, Gemini, or GitHub Copilot CLI)
 - Git (for version control with Paired Developer)
+
+> **Note:** Trestleboard is designed for **AI CLI tools** that support system prompts and have filesystem access. Web interfaces (Claude.ai, ChatGPT, etc.) can use the personas but lack the automated artifact chaining workflow. For the full experience, use a CLI tool.
 
 ### Basic Usage
 
