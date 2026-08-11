@@ -11,8 +11,8 @@ Trestleboard is a **CLI-driven, AI-agnostic project scaffolding and artifact ren
 └──────┬──────┘   └──────┬───────┘   └──────┬───────┘
        │                 │                   │
        ▼                 ▼                   ▼
-  projects/<name>/   schemas/*.json    templates/*.md
-  ├── input/         (AJV + ajv-fmts)  (Handlebars)
+  projects/<name>/   schemas/*.schema.json    templates/**/*.md
+  ├── input/         (Ajv + ajv-formats)      (Handlebars)
   ├── output/
   └── project.json
 ```
