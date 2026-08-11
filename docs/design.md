@@ -129,7 +129,7 @@ classDiagram
 
 ## Key Design Principles
 
-1. **Separation of I/O from logic** — Each script exports pure, testable functions (no I/O) and gates the `main()` CLI entry point behind `require.main === module`.
+1. **Separation of I/O from logic** — Each script exports testable functions and keeps CLI I/O in `main()` (gated behind `require.main === module`).
 2. **Schema-first data** — All project data is validated against AJV JSON schemas before rendering, catching bad inputs early.
 3. **Template-driven output** — Handlebars templates produce markdown artifacts, keeping content separate from structure.
 4. **AI-agnostic personas** — Personas are plain markdown system prompts; any LLM can use them.
