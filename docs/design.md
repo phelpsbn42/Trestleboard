@@ -17,7 +17,9 @@ Trestleboard is a **CLI-driven, AI-agnostic project scaffolding and artifact ren
   └── project.json
 ```
 
-## Class Diagram
+## Module Diagram (Conceptual)
+
+> Note: The CLI scripts are plain CommonJS modules exporting functions; this diagram uses Mermaid `classDiagram` notation for readability.
 
 ```mermaid
 classDiagram
