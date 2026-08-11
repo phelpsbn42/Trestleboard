@@ -59,9 +59,8 @@ classDiagram
     +registerPartial(name, content)
   }
 
-  class AJV {
+  class Ajv {
     +compile(schema) ValidateFunction
-    +addFormats()
   }
 
   class Commander {
