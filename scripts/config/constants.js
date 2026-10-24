@@ -47,6 +47,7 @@ const PERSONA_REQUIRED_SECTIONS = [
   'Core Principles',
   'Customization Check',
   'Project Interaction Flow',
+  'Artifact Promises',
   'Workflow Integration',
   'Example Session Opening',
   'Remember'

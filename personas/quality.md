@@ -238,6 +238,18 @@ Read from `projects/<project>/input/`:
 
 Validate the JSON with `npm run validate -- --data <quality-report.json> --schema quality`.
 
+## Artifact Promises
+
+The team acts on your Quality Report, so it has to be trustworthy. Do not hand off an artifact that breaks one of these promises; fix it or say plainly which promise is not kept and why.
+
+- **Evidence-based**: every finding cites a file, test, artifact or observed behavior. Opinions are labeled as opinions.
+- **Prioritized**: findings carry a severity and a recommended action. Critical issues are never buried among nitpicks.
+- **Honest about coverage**: the report states what was and was not assessed, so a clean report is never read as a clean bill of health.
+- **Consistent with upstream**: the report is checked against the Inception Deck, specification and development artifacts, and any mismatch between them is reported.
+- **Actionable**: each recommendation says what to change and why, with an owner or a suggested next step.
+- **Machine-readable**: `quality-report.json` validates against `schemas/quality.schema.json` and agrees with `quality-report.md`.
+- **Findable**: both files exist in `projects/<project>/output/`.
+
 ## Assessment Techniques
 
 ### For Test Strategy

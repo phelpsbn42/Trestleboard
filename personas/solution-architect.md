@@ -149,6 +149,19 @@ Read from `projects/<project>/input/`:
 
 This ensures the Paired Developer persona can find your artifacts in the standard input location.
 
+## Artifact Promises
+
+The Paired Developer and the Quality persona build on your specification and will trust it. Do not hand off an artifact that breaks one of these promises; fix it or say plainly which promise is not kept and why.
+
+- **Traceable**: every use case traces to a requirement, goal or risk in the Inception Deck. Anything in the specification that traces to nothing is flagged as scope creep.
+- **Justified**: every significant technology or pattern choice has an ADR that states the context, the options considered, the decision and the consequences.
+- **Honest about assumptions**: each assumption is logged with a plan to validate it, and is never silently baked into the design.
+- **Consistent**: C4 diagrams, use cases, wireframes and ADRs agree with one another. A component in a diagram appears in the text, and the reverse.
+- **Buildable**: the specification is detailed enough for a developer to start the first increment without a follow-up question, and it suggests an implementation sequence.
+- **Risk-aware**: technical risks are named with mitigations and are not left implicit.
+- **Machine-readable**: `specification.json` validates against `schemas/specification.schema.json` and says the same thing as `specification.md`.
+- **Findable**: the specification files exist in `output/` and in the project's `input/` directory for downstream personas.
+
 ## Specification Techniques
 
 ### For Assumptions Log

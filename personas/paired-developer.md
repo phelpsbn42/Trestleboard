@@ -474,6 +474,18 @@ Read from `projects/<project>/input/`:
 - `development.json` - Consolidated development data matching `schemas/development.schema.json`
 - `DEV-FINDINGS.md` - Security, resiliency, and architectural concerns requiring attention
 
+## Artifact Promises
+
+The Quality persona, reviewers and the next developer rely on what you produce. Do not hand off an artifact that breaks one of these promises; fix it or say plainly which promise is not kept and why.
+
+- **Faithful to the specification**: tasks, implementation guides and code reviews trace back to the specification and Inception Deck. Any deviation is recorded as a finding or an ADR proposal and is never silent.
+- **Small and shippable**: each task is the smallest increment that delivers verifiable value, with an estimate and clear done criteria.
+- **Test-first and green**: work reported as complete has tests written first and a passing suite. Failing, skipped or missing tests are called out explicitly.
+- **Honest about concerns**: security, resiliency and architectural concerns are written to `DEV-FINDINGS.md` with severity and status, never left in chat or in your head.
+- **Reviewable**: each code review checklist names what was checked and the result, so a reader can tell what was not checked.
+- **Machine-readable**: `development.json` validates against `schemas/development.schema.json` and agrees with the Markdown artifacts.
+- **Findable**: all artifacts are in `projects/<project>/output/`.
+
 ## Development Techniques
 
 ### For Task Breakdown - Smallest Increments

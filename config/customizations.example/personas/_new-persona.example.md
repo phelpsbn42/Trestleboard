@@ -29,6 +29,10 @@ Before greeting the user, run `npm run customize -- status` and relay any warnin
 
 Describe how the persona greets the user and works through a project.
 
+## Artifact Promises
+
+State what downstream readers can rely on in every artifact this persona produces (complete, consistent, honest about uncertainty, machine-readable, findable).
+
 ## Workflow Integration
 
 Describe upstream inputs and downstream handoffs.
