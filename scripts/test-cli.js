@@ -43,6 +43,9 @@ function describe(name, fn) {
 // Mock Storage for CLI Tests
 // =============================================================================
 
+// Mock keys are POSIX-style; normalize so path.join output on Windows matches
+const norm = p => p.replace(/\\/g, '/');
+
 class MockStorage extends StorageProvider {
   constructor() {
     super();
@@ -52,48 +55,57 @@ class MockStorage extends StorageProvider {
   }
 
   async exists(p) {
+    p = norm(p);
     this.operations.push({ op: 'exists', path: p });
     return this.files.has(p) || this.dirs.has(p);
   }
 
   existsSync(p) {
+    p = norm(p);
     this.operations.push({ op: 'existsSync', path: p });
     return this.files.has(p) || this.dirs.has(p);
   }
 
   async read(p) {
+    p = norm(p);
     this.operations.push({ op: 'read', path: p });
     if (!this.files.has(p)) throw new Error(`File not found: ${p}`);
     return this.files.get(p);
   }
 
   readSync(p) {
+    p = norm(p);
     this.operations.push({ op: 'readSync', path: p });
     if (!this.files.has(p)) throw new Error(`File not found: ${p}`);
     return this.files.get(p);
   }
 
   async write(p, content) {
+    p = norm(p);
     this.operations.push({ op: 'write', path: p });
     this.files.set(p, content);
   }
 
   writeSync(p, content) {
+    p = norm(p);
     this.operations.push({ op: 'writeSync', path: p });
     this.files.set(p, content);
   }
 
   async mkdir(p) {
+    p = norm(p);
     this.operations.push({ op: 'mkdir', path: p });
     this.dirs.add(p);
   }
 
   mkdirSync(p) {
+    p = norm(p);
     this.operations.push({ op: 'mkdirSync', path: p });
     this.dirs.add(p);
   }
 
   async list(p) {
+    p = norm(p);
     return Array.from(this.files.keys()).filter(f => f.startsWith(p));
   }
 

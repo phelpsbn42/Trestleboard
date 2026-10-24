@@ -341,6 +341,9 @@ async function runInjectionTests() {
   const { loadSchema } = require('./validate.js');
   const { initProject } = require('./init-project.js');
 
+  // Mock keys are POSIX-style; normalize so path.join output on Windows matches
+  const norm = p => p.replace(/\\/g, '/');
+
   // Create a mock storage
   class MockStorage extends StorageProvider {
     constructor() {
@@ -349,15 +352,15 @@ async function runInjectionTests() {
       this.dirs = new Set();
     }
 
-    async exists(p) { return this.files.has(p) || this.dirs.has(p); }
-    existsSync(p) { return this.files.has(p) || this.dirs.has(p); }
-    async read(p) { return this.files.get(p); }
-    readSync(p) { return this.files.get(p); }
-    async write(p, c) { this.files.set(p, c); }
-    writeSync(p, c) { this.files.set(p, c); }
-    async mkdir(p) { this.dirs.add(p); }
-    mkdirSync(p) { this.dirs.add(p); }
-    async list(p) { return Array.from(this.files.keys()).filter(f => f.startsWith(p)); }
+    async exists(p) { return this.existsSync(p); }
+    existsSync(p) { return this.files.has(norm(p)) || this.dirs.has(norm(p)); }
+    async read(p) { return this.readSync(p); }
+    readSync(p) { return this.files.get(norm(p)); }
+    async write(p, c) { this.writeSync(p, c); }
+    writeSync(p, c) { this.files.set(norm(p), c); }
+    async mkdir(p) { this.mkdirSync(p); }
+    mkdirSync(p) { this.dirs.add(norm(p)); }
+    async list(p) { return Array.from(this.files.keys()).filter(f => f.startsWith(norm(p))); }
     get name() { return 'MockStorage'; }
   }
 
@@ -367,7 +370,7 @@ async function runInjectionTests() {
       mock.files.set('/custom/template.md', '# Template');
 
       const result = resolveTemplatePath('/custom/template.md', '/cwd', mock);
-      assert.strictEqual(result.templatePath, '/custom/template.md');
+      assert.strictEqual(norm(result.templatePath), '/custom/template.md');
       assert.strictEqual(result.error, undefined);
     });
 
@@ -384,7 +387,7 @@ async function runInjectionTests() {
 
       const result = resolveProjectPaths('data.json', 'my-project', '/cwd', mock);
       assert.strictEqual(result.error, undefined);
-      assert.strictEqual(result.projectDir, '/cwd/projects/my-project');
+      assert.strictEqual(norm(result.projectDir), '/cwd/projects/my-project');
     });
 
     await test('resolveProjectPaths returns error for missing project', () => {
@@ -425,7 +428,7 @@ async function runInjectionTests() {
       }, mock);
 
       assert.strictEqual(result.error, undefined);
-      assert.strictEqual(result.projectDir, '/workspace/projects/test-project');
+      assert.strictEqual(norm(result.projectDir), '/workspace/projects/test-project');
 
       // Verify files were written to mock storage
       assert(mock.files.has('/workspace/projects/test-project/project.json'));

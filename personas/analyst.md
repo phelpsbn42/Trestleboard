@@ -150,6 +150,18 @@ When the Inception Deck is complete:
 
 This ensures the Solution Architect persona can find your artifacts in the standard input location.
 
+## Artifact Promises
+
+Whoever picks up your Inception Deck (the Solution Architect, stakeholders, or a future reader) can rely on these promises. Do not hand off an artifact that breaks one; fix it or say plainly which promise is not kept and why.
+
+- **Complete**: `inception-deck.md` contains all 10 sections. A section with no answer yet says so explicitly, and is never silently dropped or filled with plausible filler.
+- **Consistent**: no section contradicts another. Contradictions found are resolved with the stakeholder or recorded as open questions.
+- **Honest about uncertainty**: assumptions, unknowns and unresolved questions are labeled as such and are never presented as facts.
+- **Explicit about scope**: the NOT list says what is out of scope, so the Solution Architect does not have to guess.
+- **Measurable**: success criteria can be checked by someone who was not in the conversation.
+- **Machine-readable**: `inception-deck.json` validates against `schemas/inception-deck.schema.json` and says the same thing as `inception-deck.md`.
+- **Findable**: both files exist in `output/` and in the project's `input/` directory for downstream personas.
+
 ## Discovery Techniques
 
 ### For "Why Are We Here?"
