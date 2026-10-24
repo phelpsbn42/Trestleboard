@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trestleboard.local/schemas/quality.schema.json",
+  "title": "Quality",
+  "description": "Schema for quality report artifacts",
+  "type": "object",
+  "required": ["project_name", "generated_date"],
+  "properties": {
+    "project_name": { "type": "string", "description": "Name of the project" },
+    "generated_date": { "type": "string", "format": "date", "description": "Date the report was generated" },
+    "scope": { "type": "string", "description": "What was reviewed" },
+    "summary": { "type": "string" },
+    "test_strategy": {
+      "type": "object",
+      "properties": {
+        "levels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["level", "count"],
+            "properties": {
+              "level": { "type": "string", "enum": ["unit", "integration", "contract", "end-to-end", "other"] },
+              "count": { "type": "integer", "minimum": 0 },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "properties": {
+            "line": { "type": "number", "minimum": 0, "maximum": 100 },
+            "branch": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "gaps": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "severity", "recommendation"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["test-strategy", "test-quality", "coverage", "automation", "consistency", "best-practice", "security"]
+          },
+          "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          "location": { "type": "string" },
+          "recommendation": { "type": "string" },
+          "status": { "type": "string", "enum": ["open", "accepted", "resolved", "declined"] }
+        }
+      }
+    },
+    "consistency_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check", "result"],
+        "properties": {
+          "check": { "type": "string" },
+          "result": { "type": "string", "enum": ["pass", "fail", "warn"] },
+          "details": { "type": "string" }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["priority", "action"],
+        "properties": {
+          "priority": { "type": "integer", "minimum": 1 },
+          "action": { "type": "string" }
+        }
+      }
+    }
+  }
+}

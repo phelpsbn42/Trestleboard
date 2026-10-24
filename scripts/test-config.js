@@ -102,8 +102,8 @@ describe('SCHEMA_TYPES', () => {
     assert(SCHEMA_TYPES.includes('development'));
   });
 
-  test('has exactly 4 types', () => {
-    assert.strictEqual(SCHEMA_TYPES.length, 4);
+  test('has exactly 5 types', () => {
+    assert.strictEqual(SCHEMA_TYPES.length, 5);
   });
 });
 

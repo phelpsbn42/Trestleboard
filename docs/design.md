@@ -142,6 +142,10 @@ Trestleboard/
 │   ├── render.js          # tb-render CLI — renders Handlebars templates
 │   ├── validate.js        # tb-validate CLI — validates JSON against schemas
 │   ├── init-project.js    # tb-init CLI — scaffolds a new project
+│   ├── lint.js            # tb-lint CLI — persona/template/schema consistency checks
+│   ├── customize.js       # tb-customize CLI — customization status/init/resolve
+│   ├── personas/          # front matter parsing, add/override/overload resolution
+│   ├── customizations/    # status, example init, manifest loading
 │   ├── test-render.js     # Tests for render.js
 │   ├── test-validate.js   # Tests for validate.js
 │   └── test-init.js       # Tests for init-project.js
@@ -149,15 +153,21 @@ Trestleboard/
 │   ├── project-meta.schema.json
 │   ├── inception-deck.schema.json
 │   ├── specification.schema.json
-│   └── development.schema.json
+│   ├── development.schema.json
+│   └── quality.schema.json
 ├── templates/
 │   ├── inception-deck/
 │   ├── specification/
-│   └── development/
+│   ├── development/
+│   └── quality/
+├── config/
+│   ├── customizations.example/  # Shipped examples (tracked)
+│   └── customizations/          # Your customizations (gitignored; track in your team's repo)
 ├── personas/
 │   ├── analyst.md
 │   ├── solution-architect.md
-│   └── paired-developer.md
+│   ├── paired-developer.md
+│   └── quality.md
 ├── docs/
 │   └── design.md          # This file
 └── projects/              # Created per project by tb-init

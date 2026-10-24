@@ -69,8 +69,8 @@ describe('schemaTypes', () => {
     assert(schemaTypes.includes('development'));
   });
 
-  test('has exactly 4 schema types', () => {
-    assert.strictEqual(schemaTypes.length, 4);
+  test('has exactly 5 schema types', () => {
+    assert.strictEqual(schemaTypes.length, 5);
   });
 });
 

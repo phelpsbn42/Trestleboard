@@ -44,6 +44,12 @@ temp/
 .Trashes
 ehthumbs.db
 
+# Projects are tracked in the team's own repository, not here.
+# Only the bundled sample projects are kept.
+projects/*
+!projects/test-project/
+!projects/example-project/
+
 # Project-specific
 projects/*/output/**/*.json
 projects/*/output/**/*.md
@@ -52,3 +58,7 @@ projects/*/output/**/*.md
 
 # Rendered artifacts (keep templates, ignore rendered output)
 *-rendered.md
+
+# Local customizations: tracked in the team's own repository, not here
+# (see config/customizations.example for templates)
+config/customizations/

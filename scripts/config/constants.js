@@ -28,7 +28,28 @@ const SCHEMA_TYPES = [
   'project-meta',
   'inception-deck',
   'specification',
-  'development'
+  'development',
+  'quality'
+];
+
+// How a custom persona relates to an out-of-box persona
+const PERSONA_MODES = ['add', 'override', 'overload'];
+
+// How an overload merges a section into the base persona
+const SECTION_STRATEGIES = ['replace', 'append', 'prepend'];
+
+// Front matter fields every complete persona must declare
+const PERSONA_REQUIRED_FIELDS = ['id', 'name', 'version', 'mode', 'phase'];
+
+// Sections every persona must have, in this relative order
+const PERSONA_REQUIRED_SECTIONS = [
+  'Identity & Role',
+  'Core Principles',
+  'Customization Check',
+  'Project Interaction Flow',
+  'Workflow Integration',
+  'Example Session Opening',
+  'Remember'
 ];
 
 // Project directory structure
@@ -70,6 +91,10 @@ module.exports = {
   RISK_THRESHOLDS,
   POINT_BADGES,
   SCHEMA_TYPES,
+  PERSONA_MODES,
+  SECTION_STRATEGIES,
+  PERSONA_REQUIRED_FIELDS,
+  PERSONA_REQUIRED_SECTIONS,
   PROJECT_DIRECTORIES,
   PROJECT_STATUSES,
   getRiskLevel,
