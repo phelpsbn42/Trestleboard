@@ -29,13 +29,14 @@ Every project generates consistent, structured artifacts: business context, tech
 
 ### How It Works
 
-AI personas guide you through three phases, prompting questions you might not think to ask:
+AI personas guide you through three phases (plus a Quality persona that reviews the result), prompting questions you might not think to ask:
 
 | Phase | Persona | Output |
 |-------|---------|--------|
 | **Discovery** | Analyst | Agile Inception Deck |
 | **Design** | Solution Architect | Technical Specification |
 | **Delivery** | Paired Developer | Working Software |
+| **Assurance** | Quality | Quality Report (test strategy, findings, consistency checks) |
 
 Each persona produces both human-readable markdown and machine-readable JSON. The markdown is for you; the JSON is for knowledge graphs, search indexes, and future AI-assisted discovery.
 
@@ -137,6 +138,36 @@ Implements the solution collaboratively using **strict TDD**:
 - Demo after each value wave
 
 **Output**: Working software + `task-breakdown.md` + code review checklists
+
+### ✅ Quality
+
+An expert in automated testing and project consistency:
+
+- Reviews test strategy against the test pyramid, and test quality (flakiness, over-mocking, coverage that proves nothing)
+- Checks that artifacts, code and conventions agree with each other
+- Runs `npm run lint` to check Trestleboard's own personas, templates and schemas for consistency
+
+**Output**: `quality-report.md` + `quality-report.json`
+
+---
+
+## Customizations
+
+Add your own personas, extend or replace the built-in ones, and register new document formats and data files, without editing Trestleboard itself.
+
+1. Set `customizations.enabled: true` in `trestleboard.yaml`
+2. Run `npm run customize -- init` to create `config/customizations/` from the examples in `config/customizations.example/`
+3. Rename an example (remove the leading `_`) and edit it
+
+| Persona `mode` | Effect |
+|----------------|--------|
+| `add` | A new persona |
+| `override` | Replaces the built-in persona with the same `id` |
+| `overload` | Merges your `##` sections into the built-in persona (replace, append or prepend) |
+
+New document formats (templates) and data files (JSON schemas, usable with `tb-validate --schema <id>`) are registered in `config/customizations/customizations.yaml`.
+
+`config/customizations/` is gitignored here so your team can track it in its own repository. If customization files exist while the setting is off, tools warn that they are being ignored; if the setting is on and the folder is empty, you are offered the examples. Every persona starts with a YAML `persona:` front matter block, which `npm run lint` checks.
 
 ---
 
@@ -378,7 +409,8 @@ Trestleboard/
 ├── personas/
 │   ├── analyst.md              # Discovery & Inception Deck
 │   ├── solution-architect.md   # Technical Specification
-│   └── paired-developer.md     # TDD Implementation
+│   ├── paired-developer.md     # TDD Implementation
+│   └── quality.md              # Automated testing & consistency
 │
 ├── templates/
 │   ├── inception-deck/

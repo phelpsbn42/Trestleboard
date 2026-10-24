@@ -46,3 +46,13 @@ personas:
     - analyst
     - solution-architect
     - paired-developer
+    - quality
+
+# Customizations: your own personas, persona overloads/overrides,
+# document formats (templates) and data files (JSON schemas).
+# When enabled is false, only the out-of-box personas and documents are used.
+# Run `npm run customize -- init` to create the folder from the shipped examples.
+customizations:
+  enabled: false
+  path: config/customizations
+  examples_path: config/customizations.example

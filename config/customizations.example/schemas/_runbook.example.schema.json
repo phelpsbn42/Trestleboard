@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Runbook",
+  "description": "Example custom data file",
+  "type": "object",
+  "required": ["project_name", "generated_date"],
+  "properties": {
+    "project_name": { "type": "string" },
+    "generated_date": { "type": "string", "format": "date" },
+    "service_description": { "type": "string" },
+    "steps": { "type": "array", "items": { "type": "string" } }
+  }
+}

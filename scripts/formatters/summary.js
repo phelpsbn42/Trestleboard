@@ -71,6 +71,25 @@ function formatSpecification(data) {
 }
 
 /**
+ * Format quality report summary
+ * @param {object} data - Quality report data
+ * @returns {string[]} Summary lines
+ */
+function formatQuality(data) {
+  const lines = [`  Project: ${data.project_name || 'N/A'}`];
+
+  if (data.findings) {
+    const open = data.findings.filter(f => f.status !== 'resolved' && f.status !== 'declined');
+    lines.push(`  Findings: ${open.length} open of ${data.findings.length}`);
+  }
+  if (data.consistency_checks) {
+    const failed = data.consistency_checks.filter(c => c.result === 'fail').length;
+    lines.push(`  Consistency: ${failed} failing of ${data.consistency_checks.length} checks`);
+  }
+  return lines;
+}
+
+/**
  * Format development summary
  * @param {object} data - Development data
  * @returns {string[]} Summary lines
@@ -96,7 +115,8 @@ const summaryFormatters = {
   'project-meta': formatProjectMeta,
   'inception-deck': formatInceptionDeck,
   'specification': formatSpecification,
-  'development': formatDevelopment
+  'development': formatDevelopment,
+  'quality': formatQuality
 };
 
 /**
@@ -124,6 +144,7 @@ module.exports = {
   formatInceptionDeck,
   formatSpecification,
   formatDevelopment,
+  formatQuality,
   summaryFormatters,
   getSummaryLines,
   registerFormatter

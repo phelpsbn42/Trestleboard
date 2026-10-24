@@ -11,12 +11,13 @@
  */
 
 const path = require('path');
-const Ajv = require('ajv');
+const Ajv = require('ajv/dist/2020');
 const addFormats = require('ajv-formats');
 const { program } = require('commander');
 const { LocalStorage } = require('./storage');
 const { SCHEMA_TYPES } = require('./config');
 const { getSummaryLines } = require('./formatters');
+const { loadCustomizations } = require('./customizations');
 
 // Try to use chalk, fallback to plain text
 let chalk;
@@ -39,7 +40,7 @@ program
   .description('Validate JSON data against Trestleboard schemas')
   .version('1.0.0')
   .requiredOption('-d, --data <path>', 'Path to JSON data file')
-  .requiredOption('-s, --schema <type>', 'Schema type: project-meta, inception-deck, specification, development')
+  .requiredOption('-s, --schema <type>', 'Schema type: project-meta, inception-deck, specification, development, quality (or a custom data file id)')
   .option('-v, --verbose', 'Show detailed validation errors');
 
 // Use schema types from config (exported for backward compatibility)
@@ -101,14 +102,19 @@ function formatValidationErrors(errors, verbose = false) {
  * @param {string} schemaType - Schema type name
  * @param {string} schemasDir - Path to schemas directory
  * @param {object} storage - Storage provider instance
+ * @param {object} customSchemas - Custom data files: map of schema type to schema file path
  * @returns {object} Result with schema or error
  */
-function loadSchema(schemaType, schemasDir, storage = new LocalStorage()) {
-  if (!schemaTypes.includes(schemaType)) {
-    return { error: `Invalid schema type. Must be one of: ${schemaTypes.join(', ')}` };
+function loadSchema(schemaType, schemasDir, storage = new LocalStorage(), customSchemas = {}) {
+  const isBuiltIn = schemaTypes.includes(schemaType);
+  if (!isBuiltIn && !customSchemas[schemaType]) {
+    const valid = [...schemaTypes, ...Object.keys(customSchemas)];
+    return { error: `Invalid schema type. Must be one of: ${valid.join(', ')}` };
   }
 
-  const schemaPath = path.join(schemasDir, `${schemaType}.schema.json`);
+  const schemaPath = isBuiltIn
+    ? path.join(schemasDir, `${schemaType}.schema.json`)
+    : customSchemas[schemaType];
 
   if (!storage.existsSync(schemaPath)) {
     return { error: `Schema file not found: ${schemaPath}` };
@@ -143,8 +149,15 @@ async function main(options, storage = new LocalStorage()) {
   const cwd = process.cwd();
   const schemasDir = path.join(cwd, 'schemas');
 
+  // Custom data files (only when customizations are enabled)
+  const customizations = loadCustomizations(cwd, storage);
+  if (customizations.status.message && customizations.status.state !== 'missing') {
+    console.error(chalk.yellow(customizations.status.message));
+  }
+  const customSchemas = Object.fromEntries(customizations.dataFiles.map(d => [d.id, d.schema]));
+
   // Load schema
-  const schemaResult = loadSchema(options.schema, schemasDir, storage);
+  const schemaResult = loadSchema(options.schema, schemasDir, storage, customSchemas);
   if (schemaResult.error) {
     console.error(chalk.red(`Error: ${schemaResult.error}`));
     process.exit(1);

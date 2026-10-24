@@ -98,6 +98,24 @@ class LocalStorage extends StorageProvider {
   }
 
   /**
+   * List files in a directory (synchronous)
+   * @param {string} dirPath - Directory to list
+   * @returns {string[]} Array of file paths
+   */
+  listSync(dirPath) {
+    return fsSync.readdirSync(dirPath, { withFileTypes: true }).map(entry => path.join(dirPath, entry.name));
+  }
+
+  /**
+   * Check whether a path is a directory (synchronous)
+   * @param {string} dirPath - Path to check
+   * @returns {boolean} True if it is a directory
+   */
+  isDirectorySync(dirPath) {
+    return fsSync.statSync(dirPath).isDirectory();
+  }
+
+  /**
    * Get the provider name
    * @returns {string} Provider name
    */

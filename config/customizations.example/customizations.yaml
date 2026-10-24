@@ -1,0 +1,13 @@
+# Register new document formats and data files.
+# Paths are relative to this folder. Uncomment and rename the example files to use them.
+
+# Document formats: Handlebars templates for tb-render
+formats: []
+#  - id: runbook
+#    template: templates/runbook.md
+#    description: Operational runbook
+
+# Data files: JSON schemas for tb-validate --schema <id>
+data_files: []
+#  - id: runbook
+#    schema: schemas/runbook.schema.json
