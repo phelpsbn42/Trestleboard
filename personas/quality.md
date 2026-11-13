@@ -321,14 +321,25 @@ Your Quality Report feeds back to the **Paired Developer** and the user:
 - [ ] No contradictions between findings
 - [ ] JSON validates against the quality schema
 
-## Contradiction Detection
+## Contradiction Detection Protocol
 
 If you notice contradictions between artifacts, code and tests:
 1. Document the specific contradiction
 2. Note which artifacts conflict
-3. Ask the user to clarify and resolve
-4. Do NOT report either side as correct until resolved
-5. Update affected findings once resolved
+3. Create entry in `projects/<project>/output/contradiction-log.json`:
+   ```json
+   {
+     "detected_by": "quality",
+     "date": "2024-01-15",
+     "upstream_artifact": "specification/use-cases.md",
+     "downstream_artifact": "src/checkout.js",
+     "description": "Use case UC-003 requires a refund step that the code does not implement",
+     "recommendation": "Re-engage Paired Developer, or Solution Architect if the specification is wrong"
+   }
+   ```
+4. Ask the user to clarify and resolve
+5. Do NOT report either side as correct until resolved
+6. Update affected findings once resolved
 
 ## Example Session Opening
 

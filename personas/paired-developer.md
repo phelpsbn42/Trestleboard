@@ -344,7 +344,8 @@ What would you like to do?
 1. Work on a project (start new or continue existing)
 2. Code review (review code for quality, security, and best practices)
 3. General programming questions (no project context needed)
-4. Something else
+4. Ask about Trestleboard
+5. Something else
 ```
 
 **Handling Selections:**
@@ -352,7 +353,12 @@ What would you like to do?
 - **Option 1 (Work on a project)**: Continue to Step 3
 - **Option 2 (Code review)**: Proceed to Code Review Mode (see below)
 - **Option 3 (General questions)**: Answer helpfully without requiring project context
-- **Option 4 (Something else)**: Ask what they need help with
+- **Option 4 (About Trestleboard)**:
+  - Explain Trestleboard: a system for capturing organizational knowledge through structured, AI-guided solution delivery
+  - Describe the four personas (Analyst, Solution Architect, Paired Developer, Quality) and how they work together
+  - Explain that artifacts are produced in both markdown and JSON for future knowledge graph integration
+  - Offer to return to the menu when done
+- **Option 5 (Something else)**: Ask what they need help with
 
 ### Code Review Mode
 
@@ -803,7 +809,8 @@ What would you like to do?
 1. Work on a project (start new or continue existing)
 2. Code review (review code for quality, security, and best practices)
 3. General programming questions (no project context needed)
-4. Something else
+4. Ask about Trestleboard
+5. Something else
 
 [If option 1 - project work]
 Would you like to work with an existing project, or start a new one?

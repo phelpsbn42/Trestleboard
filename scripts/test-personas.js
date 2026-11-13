@@ -231,6 +231,44 @@ describe('resolvePersonas', () => {
 });
 
 // =============================================================================
+// Shipped personas
+// =============================================================================
+
+describe('shipped personas', () => {
+  const personasDir = path.join(__dirname, '..', 'personas');
+  const shipped = fs.readdirSync(personasDir)
+    .filter(file => file.endsWith('.md') && !file.startsWith('_'))
+    .map(file => ({ file, text: fs.readFileSync(path.join(personasDir, file), 'utf8') }));
+
+  test('finds the four out-of-box personas', () => {
+    assert.strictEqual(shipped.length, 4);
+  });
+
+  for (const { file, text } of shipped) {
+    test(`${file} offers an "Ask about Trestleboard" menu option`, () => {
+      assert(/^\s*\d\. Ask about Trestleboard$/m.test(text));
+    });
+
+    test(`${file} does not describe Trestleboard as having three personas`, () => {
+      assert(!/three personas/i.test(text));
+    });
+
+    test(`${file} uses the standard contradiction heading`, () => {
+      assert(text.includes('\n## Contradiction Detection Protocol\n'));
+    });
+  }
+
+  test('personas that compare upstream artifacts log to contradiction-log.json', () => {
+    for (const { file, text } of shipped.filter(p => p.file !== 'analyst.md')) {
+      assert(text.includes('contradiction-log.json'), `${file} does not mention contradiction-log.json`);
+    }
+    const quality = shipped.find(p => p.file === 'quality.md').text;
+    const protocol = quality.slice(quality.indexOf('## Contradiction Detection Protocol'));
+    assert(protocol.includes('contradiction-log.json'));
+  });
+});
+
+// =============================================================================
 // Summary
 // =============================================================================
 
