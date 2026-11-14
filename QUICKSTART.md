@@ -21,6 +21,7 @@ This guide will help you get started with Trestleboard and the AI-powered person
 - **Node.js** 18+ (for most CLI tools)
 - **Git** (for version control with Paired Developer)
 - **API Key** for your chosen AI provider
+- **Pandoc and a PDF engine** (only for `tb-export-pdf`; see [Pandoc installation](https://pandoc.org/installing.html))
 
 ---
 

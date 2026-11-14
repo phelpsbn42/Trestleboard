@@ -172,6 +172,43 @@ Provides cross-domain coaching, mentoring, advice, teaching, and systems thinkin
 
 **Optional output**: `guidance-assessment-practical-philosopher.md` + `.json`
 
+### Diagram Formats
+
+Diagram formats are configured in `trestleboard.yaml`. Each diagram type has exactly one
+primary format and can have supplemental formats:
+
+```yaml
+diagrams:
+  formats:
+    mermaid:
+      c4: primary
+      sequence: primary
+      wireframe: primary
+    excalidraw:
+      c4: supplemental
+      sequence: disabled
+      wireframe: supplemental
+      exports: [json]
+```
+
+Mermaid is the default primary format for deterministic, reviewable C4 and sequence
+diagrams. Excalidraw scenes are editable JSON files and can be primary or supplemental for
+C4 and wireframes. To make Excalidraw primary for C4, set `mermaid.c4: disabled` and
+`excalidraw.c4: primary`.
+
+Export an Excalidraw scene to a Markdown- and PDF-displayable SVG:
+
+```bash
+npm run export:excalidraw -- --input projects/my-project/output/diagrams/context.excalidraw --output projects/my-project/output/diagrams/context.svg
+```
+
+Export rendered Markdown documentation to PDF with [Pandoc](https://pandoc.org/installing.html).
+Pandoc and a compatible PDF engine (such as TeX, Tectonic, or WeasyPrint) must be installed:
+
+```bash
+npm run export:pdf -- --input projects/my-project/output/specification.md
+```
+
 ### Guidance Assessment
 
 Any persona can optionally create a **Guidance Assessment** when guidance should persist
