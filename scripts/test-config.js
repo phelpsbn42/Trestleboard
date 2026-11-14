@@ -16,6 +16,7 @@ const {
   PROJECT_STATUSES,
   resolveDiagramSettings,
   validateDiagramSettings,
+  validateStorageSettings,
   getRiskLevel,
   getPointsBadge
 } = require('./config');
@@ -221,6 +222,77 @@ describe('diagram configuration', () => {
       formats: { excalidraw: { exports: ['pdf'] } }
     });
     assert(errors.some(error => error.includes('excalidraw.exports')));
+  });
+});
+
+// =============================================================================
+// Storage configuration Tests
+// =============================================================================
+
+describe('storage configuration', () => {
+  test('accepts a complete MongoDB storage configuration', () => {
+    assert.deepStrictEqual(validateStorageSettings({
+      backend: 'database',
+      database: {
+        connection_string: 'mongodb://localhost:27017',
+        name: 'trestleboard',
+        collection: 'files'
+      }
+    }), []);
+  });
+
+  test('accepts a MongoDB connection-string environment variable', () => {
+    assert.deepStrictEqual(validateStorageSettings({
+      backend: 'database',
+      database: {
+        connection_string_env: 'TRESTLEBOARD_MONGODB_URI',
+        name: 'trestleboard'
+      }
+    }), []);
+  });
+
+  test('accepts MySQL as a database provider', () => {
+    assert.deepStrictEqual(validateStorageSettings({
+      backend: 'database',
+      database: {
+        provider: 'mysql',
+        connection_string: 'mysql://localhost:3306',
+        name: 'trestleboard',
+        resource: 'files'
+      }
+    }), []);
+  });
+
+  test('rejects an unsupported storage backend', () => {
+    const errors = validateStorageSettings({ backend: 'sharepoint' });
+    assert(errors.some(error => error.includes('storage.backend must be one of')));
+  });
+
+  test('rejects an unsupported database provider', () => {
+    const errors = validateStorageSettings({
+      backend: 'database',
+      database: {
+        provider: 'oracle',
+        connection_string: 'oracle://localhost',
+        name: 'trestleboard'
+      }
+    });
+    assert(errors.some(error => error.includes('storage.database.provider')));
+  });
+
+  test('requires MongoDB connection settings for the database backend', () => {
+    const errors = validateStorageSettings({ backend: 'database', database: {} });
+    assert(errors.some(error => error.includes('connection_string')));
+    assert(errors.some(error => error.includes('name')));
+  });
+
+  test('rejects malformed storage mappings', () => {
+    assert.deepStrictEqual(
+      validateStorageSettings('filesystem'),
+      ['trestleboard.yaml: storage must be a mapping']
+    );
+    assert(validateStorageSettings({ filesystem: [] })
+      .some(error => error.includes('storage.filesystem must be a mapping')));
   });
 });
 

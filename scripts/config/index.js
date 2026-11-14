@@ -3,5 +3,6 @@
  */
 module.exports = {
   ...require('./constants'),
-  ...require('./diagrams')
+  ...require('./diagrams'),
+  ...require('./storage')
 };

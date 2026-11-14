@@ -20,7 +20,8 @@ const {
   PERSONA_REQUIRED_FIELDS,
   PERSONA_REQUIRED_SECTIONS,
   SCHEMA_TYPES,
-  validateDiagramSettings
+  validateDiagramSettings,
+  validateStorageSettings
 } = require('./config');
 const { resolvePersonas, splitSections } = require('./personas');
 const { loadCustomizations } = require('./customizations');
@@ -118,6 +119,7 @@ function lint(root, storage = new LocalStorage()) {
   const personasConfig = config.personas || {};
   const customizations = loadCustomizations(root, storage);
 
+  if (config.storage !== undefined) errors.push(...validateStorageSettings(config.storage));
   if (config.diagrams !== undefined) errors.push(...validateDiagramSettings(config.diagrams));
   if (customizations.status.state === 'ignored') warnings.push(customizations.status.message);
   errors.push(...customizations.errors);

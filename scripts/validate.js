@@ -146,19 +146,19 @@ function parseData(jsonString) {
 // CLI Main Function (handles I/O)
 // =============================================================================
 
-async function main(options, storage = new LocalStorage()) {
+async function main(options, storage = new LocalStorage(), schemaStorage = storage) {
   const cwd = process.cwd();
   const schemasDir = path.join(cwd, 'schemas');
 
   // Custom data files (only when customizations are enabled)
-  const customizations = loadCustomizations(cwd, storage);
+  const customizations = loadCustomizations(cwd, schemaStorage);
   if (customizations.status.message && customizations.status.state !== 'missing') {
     console.error(chalk.yellow(customizations.status.message));
   }
   const customSchemas = Object.fromEntries(customizations.dataFiles.map(d => [d.id, d.schema]));
 
   // Load schema
-  const schemaResult = loadSchema(options.schema, schemasDir, storage, customSchemas);
+  const schemaResult = loadSchema(options.schema, schemasDir, schemaStorage, customSchemas);
   if (schemaResult.error) {
     console.error(chalk.red(`Error: ${schemaResult.error}`));
     process.exit(1);
@@ -243,5 +243,13 @@ module.exports = {
 if (require.main === module) {
   program.parse(process.argv);
   const options = program.opts();
-  main(options);
+  const { createStorage } = require('./storage');
+  try {
+    const storage = createStorage(process.cwd());
+    main(options, storage, new LocalStorage())
+      .finally(() => storage.close?.());
+  } catch (error) {
+    console.error(chalk.red(`Error: ${error.message}`));
+    process.exit(1);
+  }
 }

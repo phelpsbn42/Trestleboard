@@ -50,7 +50,9 @@
     "chalk": "^6.0.1",
     "commander": "^11.1.0",
     "handlebars": "^4.7.8",
-    "js-yaml": "^5.5.0"
+    "js-yaml": "^5.5.0",
+    "mongodb": "^6.20.0",
+    "mysql2": "^3.24.6"
   },
   "devDependencies": {
     "c8": "^12.0.0"
