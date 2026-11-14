@@ -107,7 +107,7 @@ ${metadata.project_name}/
  */
 async function initProject(projectName, options = {}, storage = new LocalStorage()) {
   const cwd = options.cwd || process.cwd();
-  const projectsDir = path.join(cwd, 'projects');
+  const projectsDir = options.projectsRoot || path.join(cwd, 'projects');
   const projectDir = path.join(projectsDir, projectName);
 
   // Check if project already exists
@@ -156,6 +156,7 @@ module.exports = {
 // Only run CLI when executed directly
 if (require.main === module) {
   const { program } = require('commander');
+  const { createStorage, loadStorageSettings, getProjectRoot } = require('./storage');
 
   program
     .name('tb-init')
@@ -175,14 +176,28 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  const projectDir = path.join(process.cwd(), 'projects', projectName);
+  const cwd = process.cwd();
+  let storage;
+  let projectRoot;
+  try {
+    const settings = loadStorageSettings(cwd);
+    storage = createStorage(cwd);
+    projectRoot = getProjectRoot(cwd, settings);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
+  const projectDir = path.join(projectRoot, projectName);
 
   console.log(`Creating project: ${projectName}`);
   console.log(`Location: ${projectDir}`);
   console.log('');
 
-  // Use the initProject function with default LocalStorage
-  initProject(projectName, { description: options.description })
+  initProject(projectName, {
+    description: options.description,
+    cwd,
+    projectsRoot: projectRoot
+  }, storage)
     .then(result => {
       if (result.error) {
         console.error(`Error: ${result.error}`);
@@ -200,8 +215,13 @@ if (require.main === module) {
       console.log('Project initialized successfully!');
       console.log('');
       console.log('Next steps:');
-      console.log(`  1. cd projects/${projectName}`);
-      console.log('  2. Add any input documents to input/');
+      if (storage.name === 'LocalStorage') {
+        console.log(`  1. cd ${path.relative(cwd, projectDir)}`);
+        console.log('  2. Add any input documents to input/');
+      } else {
+        console.log('  1. Add input artifacts with tb-render or your MongoDB integration.');
+        console.log('  2. Use tb-render --project to read or write project artifacts.');
+      }
       console.log('  3. Start the Analyst persona:');
       console.log('     claude --system-prompt ../../personas/analyst.md');
       console.log('');
@@ -209,5 +229,6 @@ if (require.main === module) {
     .catch(error => {
       console.error(`Error: ${error.message}`);
       process.exit(1);
-    });
+    })
+    .finally(() => storage.close?.());
 }

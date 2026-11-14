@@ -4,19 +4,22 @@
 
 # Storage backend configuration
 storage:
-  # Filesystem is the only implemented backend. Database and SharePoint are
-  # reserved for future providers; do not select them yet.
+  # Supported backends: filesystem (default) or database (MongoDB).
+  # SharePoint is reserved for a future provider.
   backend: filesystem
 
-  # Intended local project root. tb-init currently always creates projects in
-  # projects/, so changing this value does not yet relocate initialized projects.
+  # Local project root. tb-init and tb-render --project use this path.
   filesystem:
     projects_path: projects
 
-  # Reserved settings for the future database provider:
+  # Database settings used when backend is database. Supported providers are
+  # mongodb (the default) and mysql. Prefer connection_string_env so credentials
+  # are not committed. Project paths are stored as logical keys in resource.
   # database:
-  #   connection_string: ""
-  #   schema: trestleboard
+  #   provider: mongodb
+  #   connection_string_env: TRESTLEBOARD_MONGODB_URI
+  #   name: trestleboard
+  #   resource: files
 
   # Reserved settings for the future SharePoint provider:
   # sharepoint:

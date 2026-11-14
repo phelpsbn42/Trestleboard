@@ -252,8 +252,14 @@ active customizations. The following settings are available.
 
 | Setting | Default | Status and purpose |
 |---------|---------|--------------------|
-| `storage.backend` | `filesystem` | Filesystem is the only implemented backend. `database` and `sharepoint` are reserved configuration values; do not select them yet. |
-| `storage.filesystem.projects_path` | `projects` | Documents the intended local project root. Project initialization currently creates projects in `projects/`; changing this value does not yet relocate `tb-init` output. |
+| `storage.backend` | `filesystem` | Active. Select `filesystem` for local project files or `database` for database-backed project artifacts. SharePoint is reserved and rejected by validation. |
+| `storage.filesystem.projects_path` | `projects` | Active. Local project root used by `tb-init` and `tb-render --project`. When a database backend is selected, this becomes the logical project-key prefix. |
+| `storage.database.provider` | `mongodb` | Active. Select `mongodb` or `mysql`. |
+| `storage.database.connection_string` | none | Active for database backends. Connection string; avoid committing credentials by using `connection_string_env` instead. |
+| `storage.database.connection_string_env` | none | Active for database backends. Name of the environment variable containing the connection string. Either this or `connection_string` is required. |
+| `storage.database.name` | none | Active for database backends. Required database name. |
+| `storage.database.resource` | `files` | Active for database backends. The MongoDB collection or MySQL table holding path-addressable project files and directories. |
+| `storage.database.collection` | none | Backward-compatible MongoDB alias for `resource`; use `resource` for new configurations. |
 | `project.folders` | `[input, output]` | Documents the standard project layout. The initializer currently always creates `input` and `output`. |
 | `artifacts.generate_json` | `true` | Documents the standard Markdown-plus-JSON artifact policy. Artifact generation is controlled by the individual persona/template workflow today. |
 | `artifacts.validate_schemas` | `true` | Documents the standard schema-validation policy. Use `npm run validate` to validate an artifact. |
@@ -273,6 +279,59 @@ for a standard diagram type, invalid modes, malformed mappings, and unsupported
 Excalidraw export types. It also rejects duplicate custom format/data-file IDs,
 custom data-file IDs that collide with built-in schemas, and invalid or
 conflicting custom persona definitions.
+
+### Using a Database Backend
+
+MongoDB and MySQL store project files as path-addressable records while keeping
+templates, schemas, personas, and `trestleboard.yaml` local. This lets teams
+author and lint the Trestleboard installation offline while sharing project
+artifacts. `tb-init`, `tb-render`, and `tb-validate` select the configured
+backend automatically.
+
+Set the connection string in your shell, then configure the database backend:
+
+**MongoDB**
+
+```bash
+export TRESTLEBOARD_MONGODB_URI="mongodb://localhost:27017"
+```
+
+```yaml
+storage:
+  backend: database
+  filesystem:
+    projects_path: projects
+  database:
+    provider: mongodb
+    connection_string_env: TRESTLEBOARD_MONGODB_URI
+    name: trestleboard
+    resource: files
+```
+
+**MySQL**
+
+```bash
+export TRESTLEBOARD_MYSQL_URI="mysql://user:password@localhost:3306"
+```
+
+```yaml
+storage:
+  backend: database
+  filesystem:
+    projects_path: projects
+  database:
+    provider: mysql
+    connection_string_env: TRESTLEBOARD_MYSQL_URI
+    name: trestleboard
+    resource: files
+```
+
+On Windows PowerShell, use `$env:TRESTLEBOARD_MONGODB_URI = "mongodb://localhost:27017"` or set `TRESTLEBOARD_MYSQL_URI` to the MySQL connection string.
+
+The provider registry keeps the storage contract extensible: a future provider
+only needs to implement the path-based storage methods, be registered with the
+storage factory, and be added to the validated provider list.
+```
 
 ---
 

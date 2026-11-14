@@ -82,7 +82,7 @@ function registerPartial(name, content) {
  * @param {string} projectName - The project name
  * @param {string} cwd - Current working directory
  * @param {object} storage - Storage provider instance
- * @returns {object} Resolved paths or null if project not found
+ * @returns {object} Resolved paths or error
  */
 function resolveProjectPaths(dataPath, projectName, cwd, storage = new LocalStorage()) {
   const projectDir = path.join(cwd, 'projects', projectName);
@@ -102,6 +102,29 @@ function resolveProjectPaths(dataPath, projectName, cwd, storage = new LocalStor
     for (const p of possiblePaths) {
       if (storage.existsSync(p)) {
         resolvedDataPath = p;
+        break;
+      }
+    }
+  }
+
+  return { projectDir, dataPath: resolvedDataPath };
+}
+
+async function resolveProjectPathsAsync(dataPath, projectName, projectsRoot, storage) {
+  const projectDir = path.join(projectsRoot, projectName);
+  if (!await storage.exists(projectDir)) {
+    return { error: `Project directory not found: ${projectDir}` };
+  }
+
+  let resolvedDataPath = dataPath;
+  if (!path.isAbsolute(dataPath) && !await storage.exists(dataPath)) {
+    const possiblePaths = [
+      path.join(projectDir, 'output', dataPath),
+      path.join(projectDir, 'input', dataPath),
+    ];
+    for (const candidate of possiblePaths) {
+      if (await storage.exists(candidate)) {
+        resolvedDataPath = candidate;
         break;
       }
     }
@@ -135,7 +158,7 @@ function resolveTemplatePath(templatePath, cwd, storage = new LocalStorage()) {
 // CLI Main Function (handles I/O)
 // =============================================================================
 
-async function main(options, storage = new LocalStorage()) {
+async function main(options, storage = new LocalStorage(), templateStorage = storage, projectsRoot = path.join(process.cwd(), 'projects')) {
   try {
     // Resolve paths
     let templatePath = options.template;
@@ -145,7 +168,7 @@ async function main(options, storage = new LocalStorage()) {
 
     // If project is specified, resolve paths relative to project
     if (options.project) {
-      const resolved = resolveProjectPaths(dataPath, options.project, cwd, storage);
+      const resolved = await resolveProjectPathsAsync(dataPath, options.project, projectsRoot, storage);
       if (resolved.error) {
         console.error(`Error: ${resolved.error}`);
         process.exit(1);
@@ -154,7 +177,7 @@ async function main(options, storage = new LocalStorage()) {
     }
 
     // Resolve template path
-    const templateResolved = resolveTemplatePath(templatePath, cwd, storage);
+    const templateResolved = resolveTemplatePath(templatePath, cwd, templateStorage);
     if (templateResolved.error) {
       console.error(`Error: ${templateResolved.error}`);
       process.exit(1);
@@ -162,7 +185,7 @@ async function main(options, storage = new LocalStorage()) {
     templatePath = templateResolved.templatePath;
 
     // Read template
-    const templateContent = await storage.read(templatePath);
+    const templateContent = await templateStorage.read(templatePath);
 
     // Read and parse data
     if (!await storage.exists(dataPath)) {
@@ -182,9 +205,9 @@ async function main(options, storage = new LocalStorage()) {
     // Register any partial templates
     if (options.partial) {
       for (const partialPath of options.partial) {
-        if (await storage.exists(partialPath)) {
+        if (await templateStorage.exists(partialPath)) {
           const partialName = path.basename(partialPath, path.extname(partialPath));
-          const partialContent = await storage.read(partialPath);
+          const partialContent = await templateStorage.read(partialPath);
           registerPartial(partialName, partialContent);
         }
       }
@@ -228,6 +251,7 @@ module.exports = {
   parseJsonData,
   registerPartial,
   resolveProjectPaths,
+  resolveProjectPathsAsync,
   resolveTemplatePath,
   main,
   // Re-export storage for convenience
@@ -240,5 +264,15 @@ if (require.main === module) {
   program.parse(process.argv);
   const options = program.opts();
   registerHelpers();
-  main(options);
+  const { createStorage, loadStorageSettings, getProjectRoot } = require('./storage');
+  const cwd = process.cwd();
+  try {
+    const settings = loadStorageSettings(cwd);
+    const storage = createStorage(cwd);
+    main(options, storage, new LocalStorage(), getProjectRoot(cwd, settings))
+      .finally(() => storage.close?.());
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
 }

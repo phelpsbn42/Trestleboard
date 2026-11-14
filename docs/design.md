@@ -134,6 +134,25 @@ classDiagram
 4. **AI-agnostic personas** — Personas are plain markdown system prompts; any LLM can use them.
 5. **Flat output layout** — Projects store all generated artifacts in a flat `output/` directory for simplicity.
 
+## Storage Backends
+
+Trestleboard uses a path-based storage interface. `LocalStorage` remains the
+default and stores projects under `storage.filesystem.projects_path`. Selecting
+`storage.backend: database` selects a provider from the storage registry:
+`MongoStorage` stores project files and directories as documents, while
+`MySqlStorage` stores them as rows. Both use normalized logical paths, keeping
+project artifact paths consistent on Windows, macOS, and Linux.
+
+`tb-init`, `tb-render`, and `tb-validate` select the configured backend for
+project data. The Trestleboard installation itself—configuration, personas,
+templates, schemas, and customizations—remains local so authors can run linting
+and manage prompts without a database connection. Set
+`storage.database.provider` to `mongodb` (the default) or `mysql`; connection
+strings may be supplied with `storage.database.connection_string` or,
+preferably, the environment variable named by
+`storage.database.connection_string_env`. `storage.database.resource` names
+the collection or table used by the provider.
+
 ## Directory Structure
 
 ```

@@ -15,7 +15,17 @@ const path = require('path');
 const os = require('os');
 
 // Import the storage module
-const { StorageProvider, LocalStorage, defaultStorage } = require('./storage');
+const {
+  StorageProvider,
+  LocalStorage,
+  MongoStorage,
+  MySqlStorage,
+  createStorage,
+  loadStorageSettings,
+  getProjectRoot,
+  availableStorageProviders,
+  defaultStorage
+} = require('./storage');
 
 // Test utilities
 let passCount = 0;
@@ -204,6 +214,220 @@ async function runLocalStorageTests() {
 }
 
 // =============================================================================
+// MongoStorage Tests
+// =============================================================================
+
+class FakeMongoCollection {
+  constructor() {
+    this.documents = new Map();
+  }
+
+  async findOne(query) {
+    const document = this.documents.get(query._id);
+    if (!document || (query.kind && document.kind !== query.kind)) return null;
+    return { ...document };
+  }
+
+  async updateOne(query, update, options = {}) {
+    const existing = this.documents.get(query._id);
+    const document = existing ? { ...existing } : { _id: query._id };
+    if (!existing && options.upsert && update.$setOnInsert) Object.assign(document, update.$setOnInsert);
+    if (update.$set) Object.assign(document, update.$set);
+    this.documents.set(query._id, document);
+  }
+
+  find(query) {
+    const documents = [...this.documents.values()]
+      .filter(document => query._id.test(document._id))
+      .map(document => ({ ...document }));
+    return { toArray: async () => documents };
+  }
+}
+
+class FakeMongoClient {
+  constructor() {
+    this.collection = new FakeMongoCollection();
+    this.connectCalls = 0;
+    this.closed = false;
+  }
+
+  async connect() {
+    this.connectCalls++;
+  }
+
+  db() {
+    return { collection: () => this.collection };
+  }
+
+  async close() {
+    this.closed = true;
+  }
+}
+
+async function runMongoStorageTests() {
+  const client = new FakeMongoClient();
+  const storage = new MongoStorage({
+    connectionString: 'mongodb://example.test/trestleboard',
+    database: 'trestleboard',
+    clientFactory: () => client
+  });
+
+  await describe('MongoStorage', async () => {
+    await test('name property returns MongoStorage', () => {
+      assert.strictEqual(storage.name, 'MongoStorage');
+    });
+
+    await test('creates directories and writes normalized file paths', async () => {
+      await storage.write('projects\\sample\\output\\artifact.json', '{"project_name":"sample"}');
+      assert.strictEqual(await storage.exists('projects/sample/output'), true);
+      assert.strictEqual(await storage.exists('projects/sample/output/artifact.json'), true);
+      assert.strictEqual(
+        await storage.read('projects/sample/output/artifact.json'),
+        '{"project_name":"sample"}'
+      );
+    });
+
+    await test('lists immediate directory entries', async () => {
+      await storage.write('projects/sample/output/second.json', '{}');
+      const entries = await storage.list('projects/sample/output');
+      assert.deepStrictEqual(entries.sort(), [
+        'projects/sample/output/artifact.json',
+        'projects/sample/output/second.json'
+      ]);
+    });
+
+    await test('rejects file and directory path conflicts', async () => {
+      await assert.rejects(() => storage.mkdir('projects/sample/output/artifact.json'));
+      await assert.rejects(() => storage.write('projects/sample/output', 'not a file'));
+    });
+
+    await test('closes the MongoDB client', async () => {
+      await storage.close();
+      assert.strictEqual(client.closed, true);
+    });
+  });
+}
+
+// =============================================================================
+// MySqlStorage Tests
+// =============================================================================
+
+class FakeMySqlConnection {
+  constructor() {
+    this.documents = new Map();
+    this.closed = false;
+  }
+
+  async execute(statement, parameters = []) {
+    const sql = statement.replace(/\s+/g, ' ').trim();
+    if (sql.startsWith('CREATE TABLE')) return [[]];
+    if (sql.startsWith('SELECT path, kind, content')) {
+      const document = this.documents.get(parameters[0]);
+      return [document ? [{ ...document }] : []];
+    }
+    if (sql.startsWith('SELECT path FROM')) {
+      const prefix = parameters[0].slice(0, -1);
+      return [[...this.documents.values()]
+        .filter(document => document.path.startsWith(prefix))
+        .map(document => ({ path: document.path }))];
+    }
+    if (sql.startsWith('INSERT IGNORE')) {
+      if (!this.documents.has(parameters[0])) {
+        this.documents.set(parameters[0], { path: parameters[0], kind: 'directory', content: null });
+      }
+      return [[]];
+    }
+    if (sql.startsWith('INSERT INTO')) {
+      this.documents.set(parameters[0], { path: parameters[0], kind: 'file', content: parameters[1] });
+      return [[]];
+    }
+    throw new Error(`Unexpected SQL: ${sql}`);
+  }
+
+  async end() {
+    this.closed = true;
+  }
+}
+
+async function runMySqlStorageTests() {
+  const connection = new FakeMySqlConnection();
+  const storage = new MySqlStorage({
+    connectionString: 'mysql://example.test/trestleboard',
+    database: 'trestleboard',
+    clientFactory: async () => connection
+  });
+
+  await describe('MySqlStorage', async () => {
+    await test('name property returns MySqlStorage', () => {
+      assert.strictEqual(storage.name, 'MySqlStorage');
+    });
+
+    await test('creates directories and writes normalized file paths', async () => {
+      await storage.write('projects\\sample\\output\\artifact.json', '{"project_name":"sample"}');
+      assert.strictEqual(await storage.exists('projects/sample/output'), true);
+      assert.strictEqual(await storage.read('projects/sample/output/artifact.json'), '{"project_name":"sample"}');
+    });
+
+    await test('lists immediate directory entries', async () => {
+      await storage.write('projects/sample/output/second.json', '{}');
+      const entries = await storage.list('projects/sample/output');
+      assert.deepStrictEqual(entries.sort(), [
+        'projects/sample/output/artifact.json',
+        'projects/sample/output/second.json'
+      ]);
+    });
+
+    await test('rejects file and directory path conflicts', async () => {
+      await assert.rejects(() => storage.mkdir('projects/sample/output/artifact.json'));
+      await assert.rejects(() => storage.write('projects/sample/output', 'not a file'));
+    });
+
+    await test('closes the MySQL connection', async () => {
+      await storage.close();
+      assert.strictEqual(connection.closed, true);
+    });
+  });
+}
+
+// =============================================================================
+// Storage Factory Tests
+// =============================================================================
+
+async function runStorageFactoryTests() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'tb-storage-config-'));
+  fs.writeFileSync(path.join(root, 'trestleboard.yaml'),
+    'storage:\n  backend: database\n  filesystem:\n    projects_path: workspace\n  database:\n    connection_string: mongodb://localhost:27017\n    name: trestleboard\n    collection: artifacts\n');
+
+  await describe('storage factory', async () => {
+    await test('loads database settings and creates MongoStorage', () => {
+      const settings = loadStorageSettings(root);
+      const storage = createStorage(root);
+      assert.strictEqual(settings.database.collection, 'artifacts');
+      assert(storage instanceof MongoStorage);
+      assert.strictEqual(getProjectRoot(root, settings), 'workspace');
+    });
+
+    await test('creates MySqlStorage for the MySQL provider', () => {
+      fs.writeFileSync(path.join(root, 'trestleboard.yaml'),
+        'storage:\n  backend: database\n  database:\n    provider: mysql\n    connection_string: mysql://localhost:3306\n    name: trestleboard\n    resource: artifacts\n');
+      assert(createStorage(root) instanceof MySqlStorage);
+    });
+
+    await test('reports an unavailable connection-string environment variable', () => {
+      fs.writeFileSync(path.join(root, 'trestleboard.yaml'),
+        'storage:\n  backend: database\n  database:\n    connection_string_env: TRESTLEBOARD_TEST_MISSING_URI\n    name: trestleboard\n');
+      assert.throws(() => createStorage(root), /TRESTLEBOARD_TEST_MISSING_URI/);
+    });
+
+    await test('lists built-in database providers', () => {
+      assert.deepStrictEqual(availableStorageProviders().sort(), ['mongodb', 'mysql']);
+    });
+  });
+
+  fs.rmSync(root, { recursive: true, force: true });
+}
+
+// =============================================================================
 // Default Storage Export Tests
 // =============================================================================
 
@@ -337,7 +561,7 @@ async function runMockStorageTests() {
 // =============================================================================
 
 async function runInjectionTests() {
-  const { resolveTemplatePath, resolveProjectPaths } = require('./render.js');
+  const { resolveTemplatePath, resolveProjectPaths, resolveProjectPathsAsync } = require('./render.js');
   const { loadSchema } = require('./validate.js');
   const { initProject } = require('./init-project.js');
 
@@ -380,20 +604,30 @@ async function runInjectionTests() {
       assert(result.error.includes('not found'));
     });
 
-    await test('resolveProjectPaths uses injected storage', () => {
+    await test('resolveProjectPaths uses injected storage', async () => {
       const mock = new MockStorage();
       mock.dirs.add('/cwd/projects/my-project');
       mock.files.set('/cwd/projects/my-project/output/data.json', '{}');
 
-      const result = resolveProjectPaths('data.json', 'my-project', '/cwd', mock);
+      const result = await resolveProjectPaths('data.json', 'my-project', '/cwd', mock);
       assert.strictEqual(result.error, undefined);
       assert.strictEqual(norm(result.projectDir), '/cwd/projects/my-project');
     });
 
-    await test('resolveProjectPaths returns error for missing project', () => {
+    await test('resolveProjectPaths returns error for missing project', async () => {
       const mock = new MockStorage();
-      const result = resolveProjectPaths('data.json', 'missing-project', '/cwd', mock);
+      const result = await resolveProjectPaths('data.json', 'missing-project', '/cwd', mock);
       assert(result.error.includes('not found'));
+    });
+
+    await test('resolveProjectPathsAsync supports a logical project root', async () => {
+      const mock = new MockStorage();
+      mock.dirs.add('projects/my-project');
+      mock.files.set('projects/my-project/input/data.json', '{}');
+
+      const result = await resolveProjectPathsAsync('data.json', 'my-project', 'projects', mock);
+      assert.strictEqual(norm(result.projectDir), 'projects/my-project');
+      assert.strictEqual(norm(result.dataPath), 'projects/my-project/input/data.json');
     });
   });
 
@@ -464,6 +698,15 @@ async function runInjectionTests() {
       assert.strictEqual(metadata.description, 'My application');
       assert.strictEqual(metadata.status, 'inception');
     });
+
+    await test('initProject uses a configured project root', async () => {
+      const mock = new MockStorage();
+      const result = await initProject('remote-app', {
+        cwd: '/workspace',
+        projectsRoot: 'workspace-projects'
+      }, mock);
+      assert.strictEqual(norm(result.projectDir), 'workspace-projects/remote-app');
+    });
   });
 }
 
@@ -478,6 +721,9 @@ async function runAllTests() {
 
   await runStorageProviderTests();
   await runLocalStorageTests();
+  await runMongoStorageTests();
+  await runMySqlStorageTests();
+  await runStorageFactoryTests();
   await runDefaultStorageTests();
   await runMockStorageTests();
   await runInjectionTests();

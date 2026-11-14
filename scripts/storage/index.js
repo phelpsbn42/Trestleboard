@@ -15,6 +15,15 @@
  */
 const StorageProvider = require('./StorageProvider');
 const LocalStorage = require('./LocalStorage');
+const MongoStorage = require('./MongoStorage');
+const MySqlStorage = require('./MySqlStorage');
+const {
+  createStorage,
+  loadStorageSettings,
+  getProjectRoot,
+  registerStorageProvider,
+  availableStorageProviders
+} = require('./createStorage');
 
 // Default storage instance for convenience
 const defaultStorage = new LocalStorage();
@@ -22,5 +31,12 @@ const defaultStorage = new LocalStorage();
 module.exports = {
   StorageProvider,
   LocalStorage,
+  MongoStorage,
+  MySqlStorage,
+  createStorage,
+  loadStorageSettings,
+  getProjectRoot,
+  registerStorageProvider,
+  availableStorageProviders,
   defaultStorage
 };
