@@ -242,7 +242,7 @@ describe('shipped personas', () => {
     'paired-developer.md',
     'quality.md',
     'agile-coach.md',
-    'practical-philosopher.md'
+    'executive-coach.md'
   ];
   const shipped = shippedFiles
     .map(file => ({ file, text: fs.readFileSync(path.join(personasDir, file), 'utf8') }));

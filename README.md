@@ -37,7 +37,7 @@ AI personas guide you through three delivery phases, with Quality providing assu
 | **Design** | Solution Architect | Technical Specification |
 | **Delivery** | Paired Developer | Working Software |
 | **Assurance** | Quality | Quality Report (test strategy, findings, consistency checks) |
-| **Coaching** | Agile Coach, Practical Philosopher | Flow, team-dynamics, engineering excellence, and cross-domain decision guidance |
+| **Coaching** | Agile Coach, Executive Coach | Flow, team-dynamics, engineering excellence, and cross-domain decision guidance |
 
 Each persona produces both human-readable markdown and machine-readable JSON. The markdown is for you; the JSON is for knowledge graphs, search indexes, and future AI-assisted discovery.
 
@@ -162,7 +162,7 @@ Helps teams improve flow, team dynamics, and engineering excellence:
 
 **Optional output**: `guidance-assessment-agile-coach.md` + `.json`
 
-### 🧠 Practical Philosopher
+### 🧠 Executive Coach
 
 Provides cross-domain coaching, mentoring, advice, teaching, and systems thinking:
 
@@ -170,7 +170,7 @@ Provides cross-domain coaching, mentoring, advice, teaching, and systems thinkin
 - Grounds recommendations in evidence, tradeoffs, constraints, and humane accountability
 - Supplies a reference library of leadership, flow, craftsmanship, and organizational-learning patterns
 
-**Optional output**: `guidance-assessment-practical-philosopher.md` + `.json`
+**Optional output**: `guidance-assessment-executive-coach.md` + `.json`
 
 ### Diagram Formats
 
