@@ -13,9 +13,11 @@
 
 const path = require('path');
 const Handlebars = require('handlebars');
-const { program } = require('commander');
+const { Command } = require('commander');
 const { LocalStorage } = require('./storage');
 const { registerAllHelpers } = require('./helpers');
+
+const program = new Command();
 
 // Configure program (but don't parse yet - that happens at the bottom when run directly)
 program

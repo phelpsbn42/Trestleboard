@@ -13,11 +13,13 @@
 const path = require('path');
 const Ajv = require('ajv/dist/2020');
 const addFormats = require('ajv-formats');
-const { program } = require('commander');
+const { Command } = require('commander');
 const { LocalStorage } = require('./storage');
 const { SCHEMA_TYPES } = require('./config');
 const { getSummaryLines } = require('./formatters');
 const { loadCustomizations } = require('./customizations');
+
+const program = new Command();
 
 // Try to use chalk, fallback to plain text
 let chalk;

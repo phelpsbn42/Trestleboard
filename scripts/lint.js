@@ -13,7 +13,7 @@
 
 const path = require('path');
 const yaml = require('js-yaml');
-const { program } = require('commander');
+const { Command } = require('commander');
 const { LocalStorage } = require('./storage');
 const {
   PERSONA_MODES,
@@ -23,6 +23,8 @@ const {
 } = require('./config');
 const { resolvePersonas, splitSections } = require('./personas');
 const { loadCustomizations } = require('./customizations');
+
+const program = new Command();
 
 program
   .name('tb-lint')
