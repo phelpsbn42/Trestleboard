@@ -22,7 +22,8 @@ const { loadCustomizations } = require('./customizations');
 // Try to use chalk, fallback to plain text
 let chalk;
 try {
-  chalk = require('chalk');
+  const chalkModule = require('chalk');
+  chalk = chalkModule.default || chalkModule;
 } catch (e) {
   chalk = {
     green: (s) => s,
