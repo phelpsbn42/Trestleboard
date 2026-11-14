@@ -534,6 +534,7 @@
           },
           "key_flows": {
             "type": "array",
+            "description": "Architecturally significant interaction flows rendered as Mermaid sequence diagrams",
             "items": {
               "type": "object",
               "properties": {

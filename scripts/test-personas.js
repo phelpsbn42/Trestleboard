@@ -236,12 +236,19 @@ describe('resolvePersonas', () => {
 
 describe('shipped personas', () => {
   const personasDir = path.join(__dirname, '..', 'personas');
-  const shipped = fs.readdirSync(personasDir)
-    .filter(file => file.endsWith('.md') && !file.startsWith('_'))
+  const shippedFiles = [
+    'analyst.md',
+    'solution-architect.md',
+    'paired-developer.md',
+    'quality.md',
+    'agile-coach.md',
+    'practical-philosopher.md'
+  ];
+  const shipped = shippedFiles
     .map(file => ({ file, text: fs.readFileSync(path.join(personasDir, file), 'utf8') }));
 
-  test('finds the four out-of-box personas', () => {
-    assert.strictEqual(shipped.length, 4);
+  test('finds the six out-of-box personas', () => {
+    assert.strictEqual(shipped.length, 6);
   });
 
   for (const { file, text } of shipped) {
@@ -259,7 +266,8 @@ describe('shipped personas', () => {
   }
 
   test('personas that compare upstream artifacts log to contradiction-log.json', () => {
-    for (const { file, text } of shipped.filter(p => p.file !== 'analyst.md')) {
+    const artifactPersonas = ['solution-architect.md', 'paired-developer.md', 'quality.md'];
+    for (const { file, text } of shipped.filter(p => artifactPersonas.includes(p.file))) {
       assert(text.includes('contradiction-log.json'), `${file} does not mention contradiction-log.json`);
     }
     const quality = shipped.find(p => p.file === 'quality.md').text;

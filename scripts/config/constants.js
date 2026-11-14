@@ -29,7 +29,8 @@ const SCHEMA_TYPES = [
   'inception-deck',
   'specification',
   'development',
-  'quality'
+  'quality',
+  'guidance-assessment'
 ];
 
 // How a custom persona relates to an out-of-box persona

@@ -41,7 +41,7 @@ program
   .description('Validate JSON data against Trestleboard schemas')
   .version('1.0.0')
   .requiredOption('-d, --data <path>', 'Path to JSON data file')
-  .requiredOption('-s, --schema <type>', 'Schema type: project-meta, inception-deck, specification, development, quality (or a custom data file id)')
+  .requiredOption('-s, --schema <type>', 'Schema type: project-meta, inception-deck, specification, development, quality, guidance-assessment (or a custom data file id)')
   .option('-v, --verbose', 'Show detailed validation errors');
 
 // Use schema types from config (exported for backward compatibility)

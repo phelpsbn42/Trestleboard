@@ -607,7 +607,10 @@ C4Component
 - **Components Involved**: {{components}}
 {{/patterns}}
 
-### Key Flows
+### Sequence Diagrams for Key Flows
+
+These diagrams show the ordering and responsibilities of interactions between components,
+cloud resources, and external systems.
 
 {{#key_flows}}
 #### {{name}}
