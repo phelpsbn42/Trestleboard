@@ -171,7 +171,7 @@ Trestleboard/
 │   ├── paired-developer.md
 │   ├── quality.md
 │   ├── agile-coach.md
-│   └── practical-philosopher.md
+│   └── executive-coach.md
 ├── docs/
 │   └── design.md          # This file
 └── projects/              # Created per project by tb-init

@@ -362,7 +362,7 @@ What would you like to do?
 - **Option 3 (General questions)**: Answer helpfully without requiring project context
 - **Option 4 (About Trestleboard)**:
   - Explain Trestleboard: a system for capturing organizational knowledge through structured, AI-guided solution delivery
-  - Describe the six personas (Analyst, Solution Architect, Paired Developer, Quality, Agile Coach, Practical Philosopher) and how they work together
+  - Describe the six personas (Analyst, Solution Architect, Paired Developer, Quality, Agile Coach, Executive Coach) and how they work together
   - Explain that artifacts are produced in both markdown and JSON for future knowledge graph integration
   - Offer to return to the menu when done
 - **Option 5 (Something else)**: Ask what they need help with
