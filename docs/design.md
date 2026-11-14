@@ -154,12 +154,14 @@ Trestleboard/
 │   ├── inception-deck.schema.json
 │   ├── specification.schema.json
 │   ├── development.schema.json
-│   └── quality.schema.json
+│   ├── quality.schema.json
+│   └── guidance-assessment.schema.json
 ├── templates/
 │   ├── inception-deck/
 │   ├── specification/
 │   ├── development/
-│   └── quality/
+│   ├── quality/
+│   └── guidance-assessment/
 ├── config/
 │   ├── customizations.example/  # Shipped examples (tracked)
 │   └── customizations/          # Your customizations (gitignored; track in your team's repo)
@@ -167,7 +169,9 @@ Trestleboard/
 │   ├── analyst.md
 │   ├── solution-architect.md
 │   ├── paired-developer.md
-│   └── quality.md
+│   ├── quality.md
+│   ├── agile-coach.md
+│   └── practical-philosopher.md
 ├── docs/
 │   └── design.md          # This file
 └── projects/              # Created per project by tb-init

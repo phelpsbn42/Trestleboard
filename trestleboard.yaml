@@ -47,6 +47,8 @@ personas:
     - solution-architect
     - paired-developer
     - quality
+    - agile-coach
+    - practical-philosopher
 
 # Customizations: your own personas, persona overloads/overrides,
 # document formats (templates) and data files (JSON schemas).

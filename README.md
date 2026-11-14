@@ -29,7 +29,7 @@ Every project generates consistent, structured artifacts: business context, tech
 
 ### How It Works
 
-AI personas guide you through three phases (plus a Quality persona that reviews the result), prompting questions you might not think to ask:
+AI personas guide you through three delivery phases, with Quality providing assurance and coaching personas supporting continuous improvement, prompting questions you might not think to ask:
 
 | Phase | Persona | Output |
 |-------|---------|--------|
@@ -37,6 +37,7 @@ AI personas guide you through three phases (plus a Quality persona that reviews 
 | **Design** | Solution Architect | Technical Specification |
 | **Delivery** | Paired Developer | Working Software |
 | **Assurance** | Quality | Quality Report (test strategy, findings, consistency checks) |
+| **Coaching** | Agile Coach, Practical Philosopher | Flow, team-dynamics, engineering excellence, and cross-domain decision guidance |
 
 Each persona produces both human-readable markdown and machine-readable JSON. The markdown is for you; the JSON is for knowledge graphs, search indexes, and future AI-assisted discovery.
 
@@ -94,6 +95,7 @@ The personas don't just generate artifacts—they coach you through the process 
 - **Contradiction Detection**: Downstream personas flag upstream inconsistencies
 - **Mustache Templates**: Consistent, repeatable artifact generation
 - **Test-Driven Development**: Paired Developer enforces TDD discipline
+- **Guidance Assessments**: Any persona can optionally capture observations, interpretations, suggestions, and follow-up signals in Markdown and JSON
 
 ---
 
@@ -122,6 +124,7 @@ Transforms the Inception Deck into a **Technical Specification**:
 
 - Use Cases (actors, flows, exceptions)
 - C4 Diagrams (Context, Container, Component) in Mermaid
+- Sequence diagrams for key component, cloud-resource, and external-system interactions
 - Wireframes (ASCII/Mermaid)
 - Architectural Decision Records (ADRs)
 
@@ -148,6 +151,39 @@ An expert in automated testing and project consistency:
 - Runs `npm run lint` to check Trestleboard's own personas, templates and schemas for consistency
 
 **Output**: `quality-report.md` + `quality-report.json`
+
+### 🧭 Agile Coach
+
+Helps teams improve flow, team dynamics, and engineering excellence:
+
+- Distinguishes portfolio-management concerns from team-level improvements
+- Explains Scrum ceremonies as feedback loops and why they matter
+- Applies XP and Agile Fluency practices to enable safe, sustainable change
+
+**Optional output**: `guidance-assessment-agile-coach.md` + `.json`
+
+### 🧠 Practical Philosopher
+
+Provides cross-domain coaching, mentoring, advice, teaching, and systems thinking:
+
+- Selects the interaction mode the user needs: listener, coach, mentor, advisor, or teacher
+- Grounds recommendations in evidence, tradeoffs, constraints, and humane accountability
+- Supplies a reference library of leadership, flow, craftsmanship, and organizational-learning patterns
+
+**Optional output**: `guidance-assessment-practical-philosopher.md` + `.json`
+
+### Guidance Assessment
+
+Any persona can optionally create a **Guidance Assessment** when guidance should persist
+alongside the primary delivery artifacts. It separates:
+
+- **What I Notice**: evidence-based observations
+- **My Interpretation**: inferences, assumptions, and confidence
+- **Suggestions and Experiments**: actions, owners, timeboxes, and signals to inspect
+- **Open Questions, Risks, and Handoff**: unresolved concerns and the appropriate next step
+
+Each file is suffixed with its producing persona, such as
+`guidance-assessment-quality.json`, so assessments can coexist in one project.
 
 ---
 

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trestleboard.local/schemas/guidance-assessment.schema.json",
+  "title": "Guidance Assessment",
+  "description": "Schema for optional persona assessments and coaching guidance",
+  "type": "object",
+  "required": ["project_name", "generated_date", "persona", "scope"],
+  "properties": {
+    "project_name": { "type": "string", "description": "Project or engagement name" },
+    "generated_date": { "type": "string", "format": "date", "description": "Date the assessment was generated" },
+    "persona": { "type": "string", "description": "Persona that produced the assessment" },
+    "scope": { "type": "string", "description": "Question, situation, or material assessed" },
+    "summary": { "type": "string" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["description"],
+        "properties": {
+          "description": { "type": "string" },
+          "location": { "type": "string" },
+          "kind": { "type": "string", "enum": ["conversation", "artifact", "code", "test", "metric", "other"] }
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement"],
+        "properties": {
+          "id": { "type": "string" },
+          "statement": { "type": "string" },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "interpretations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "confidence"],
+        "properties": {
+          "id": { "type": "string" },
+          "statement": { "type": "string" },
+          "assumptions": { "type": "array", "items": { "type": "string" } },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "action"],
+        "properties": {
+          "id": { "type": "string" },
+          "action": { "type": "string" },
+          "rationale": { "type": "string" },
+          "owner": { "type": "string" },
+          "timebox": { "type": "string" },
+          "signal": { "type": "string" },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "open_questions": { "type": "array", "items": { "type": "string" } },
+    "risks_or_contradictions": { "type": "array", "items": { "type": "string" } },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "next_persona": { "type": "string" },
+        "next_step": { "type": "string" }
+      }
+    }
+  }
+}
