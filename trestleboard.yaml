@@ -1,22 +1,24 @@
 # Trestleboard Configuration
-# Controls how and where artifacts are stored and retrieved.
+# Run `npm run lint` after editing. It validates diagrams, persona registration,
+# and active customizations. See README.md for the complete settings reference.
 
 # Storage backend configuration
 storage:
-  # Backend type: filesystem | database | sharepoint
+  # Filesystem is the only implemented backend. Database and SharePoint are
+  # reserved for future providers; do not select them yet.
   backend: filesystem
 
-  # Filesystem settings (used when backend: filesystem)
+  # Intended local project root. tb-init currently always creates projects in
+  # projects/, so changing this value does not yet relocate initialized projects.
   filesystem:
-    # Base path for projects (relative to Trestleboard root)
     projects_path: projects
 
-  # Database settings (used when backend: database)
+  # Reserved settings for the future database provider:
   # database:
   #   connection_string: ""
   #   schema: trestleboard
 
-  # SharePoint settings (used when backend: sharepoint)
+  # Reserved settings for the future SharePoint provider:
   # sharepoint:
   #   site_url: ""
   #   library: "Trestleboard Documents"
@@ -25,22 +27,26 @@ storage:
 
 # Project structure
 project:
-  # Folders created for each project
+  # Standard project folders. tb-init currently always creates input and output.
   folders:
     - input
     - output
 
 # Artifact settings
 artifacts:
-  # Generate JSON alongside markdown
+  # Standard Markdown-plus-JSON artifact policy. Individual persona/template
+  # workflows currently control artifact generation.
   generate_json: true
 
-  # JSON schema validation
+  # Schema-validation policy. Use `npm run validate` to validate an artifact.
   validate_schemas: true
+  # Built-in schema location. Use tb-validate --schemas-dir for another location.
   schemas_path: schemas
 
 # Diagram formats. Each type has one primary format and can have supplemental formats.
-# Excalidraw JSON is editable in Excalidraw; SVG/PNG export requires a renderer integration.
+# Each standard type (c4, sequence, wireframe) must have exactly one primary format.
+# Modes are primary, supplemental, or disabled. Excalidraw JSON is editable; use
+# tb-export-excalidraw to create displayable SVG output.
 diagrams:
   formats:
     mermaid:
@@ -57,7 +63,9 @@ diagrams:
 
 # Persona settings
 personas:
+  # Built-in persona directory used by npm run lint.
   path: personas
+  # Every built-in persona ID must appear here exactly once.
   available:
     - analyst
     - solution-architect

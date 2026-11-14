@@ -244,6 +244,38 @@ New document formats (templates) and data files (JSON schemas, usable with `tb-v
 
 ---
 
+## Configuration Reference
+
+`trestleboard.yaml` is the project configuration file. Run `npm run lint` after
+editing it: it validates diagram renderer conflicts, persona registration, and
+active customizations. The following settings are available.
+
+| Setting | Default | Status and purpose |
+|---------|---------|--------------------|
+| `storage.backend` | `filesystem` | Filesystem is the only implemented backend. `database` and `sharepoint` are reserved configuration values; do not select them yet. |
+| `storage.filesystem.projects_path` | `projects` | Documents the intended local project root. Project initialization currently creates projects in `projects/`; changing this value does not yet relocate `tb-init` output. |
+| `project.folders` | `[input, output]` | Documents the standard project layout. The initializer currently always creates `input` and `output`. |
+| `artifacts.generate_json` | `true` | Documents the standard Markdown-plus-JSON artifact policy. Artifact generation is controlled by the individual persona/template workflow today. |
+| `artifacts.validate_schemas` | `true` | Documents the standard schema-validation policy. Use `npm run validate` to validate an artifact. |
+| `artifacts.schemas_path` | `schemas` | Documents the built-in schema location. `tb-validate` uses its `--schemas-dir` option when a different directory is needed. |
+| `diagrams.formats.<format>.<type>` | Mermaid primary | Active. Set each standard type (`c4`, `sequence`, `wireframe`) to `primary`, `supplemental`, or `disabled`. Exactly one format must be `primary` per type. |
+| `diagrams.formats.excalidraw.exports` | `[json]` | Active. Allowed values are `json`, `svg`, and `png`; generate SVG with `npm run export:excalidraw`. |
+| `personas.path` | `personas` | Active for `npm run lint`; it is the directory containing built-in persona prompts. |
+| `personas.available` | built-in personas | Active for `npm run lint`; list every built-in persona ID exactly once. It must match the persona files. |
+| `customizations.enabled` | `false` | Active. Enables locally supplied personas, document formats, and data-file schemas. |
+| `customizations.path` | `config/customizations` | Active. Location for local customization files. |
+| `customizations.examples_path` | `config/customizations.example` | Active. Source copied by `npm run customize -- init`. |
+
+### Diagram Conflict Rules
+
+The linter rejects configurations that have zero or multiple primary renderers
+for a standard diagram type, invalid modes, malformed mappings, and unsupported
+Excalidraw export types. It also rejects duplicate custom format/data-file IDs,
+custom data-file IDs that collide with built-in schemas, and invalid or
+conflicting custom persona definitions.
+
+---
+
 ## Quick Start
 
 See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.

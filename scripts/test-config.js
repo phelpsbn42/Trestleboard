@@ -188,6 +188,34 @@ describe('diagram configuration', () => {
     assert(errors.some(error => error.includes('exactly one primary format for c4')));
   });
 
+  test('rejects a diagram type with no primary format', () => {
+    const errors = validateDiagramSettings({
+      formats: {
+        mermaid: { c4: 'disabled' },
+        excalidraw: { c4: 'disabled' }
+      }
+    });
+    assert(errors.some(error => error.includes('exactly one primary format for c4')));
+  });
+
+  test('rejects invalid diagram modes', () => {
+    const errors = validateDiagramSettings({
+      formats: { mermaid: { sequence: 'optional' } }
+    });
+    assert(errors.some(error => error.includes('mermaid.sequence must be one of')));
+  });
+
+  test('rejects malformed diagram mappings', () => {
+    assert.deepStrictEqual(
+      validateDiagramSettings({ formats: ['mermaid'] }),
+      ['trestleboard.yaml: diagrams.formats must be a mapping']
+    );
+    assert.deepStrictEqual(
+      validateDiagramSettings('mermaid'),
+      ['trestleboard.yaml: diagrams must be a mapping']
+    );
+  });
+
   test('rejects invalid Excalidraw export formats', () => {
     const errors = validateDiagramSettings({
       formats: { excalidraw: { exports: ['pdf'] } }
