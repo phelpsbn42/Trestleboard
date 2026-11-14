@@ -14,6 +14,8 @@ const {
   SCHEMA_TYPES,
   PROJECT_DIRECTORIES,
   PROJECT_STATUSES,
+  resolveDiagramSettings,
+  validateDiagramSettings,
   getRiskLevel,
   getPointsBadge
 } = require('./config');
@@ -144,6 +146,53 @@ describe('PROJECT_STATUSES', () => {
 
   test('includes complete', () => {
     assert(PROJECT_STATUSES.includes('complete'));
+  });
+});
+
+// =============================================================================
+// Diagram configuration Tests
+// =============================================================================
+
+describe('diagram configuration', () => {
+  test('uses Mermaid as the primary default for all diagram types', () => {
+    const settings = resolveDiagramSettings();
+    assert.strictEqual(settings.formats.mermaid.c4, 'primary');
+    assert.strictEqual(settings.formats.mermaid.sequence, 'primary');
+    assert.strictEqual(settings.formats.mermaid.wireframe, 'primary');
+  });
+
+  test('uses Excalidraw as a supplemental C4 and wireframe format by default', () => {
+    const settings = resolveDiagramSettings();
+    assert.strictEqual(settings.formats.excalidraw.c4, 'supplemental');
+    assert.strictEqual(settings.formats.excalidraw.sequence, 'disabled');
+    assert.deepStrictEqual(settings.formats.excalidraw.exports, ['json']);
+  });
+
+  test('allows Excalidraw to replace Mermaid for C4 diagrams', () => {
+    const errors = validateDiagramSettings({
+      formats: {
+        mermaid: { c4: 'disabled' },
+        excalidraw: { c4: 'primary' }
+      }
+    });
+    assert.deepStrictEqual(errors, []);
+  });
+
+  test('rejects multiple primary formats for one diagram type', () => {
+    const errors = validateDiagramSettings({
+      formats: {
+        mermaid: { c4: 'primary' },
+        excalidraw: { c4: 'primary' }
+      }
+    });
+    assert(errors.some(error => error.includes('exactly one primary format for c4')));
+  });
+
+  test('rejects invalid Excalidraw export formats', () => {
+    const errors = validateDiagramSettings({
+      formats: { excalidraw: { exports: ['pdf'] } }
+    });
+    assert(errors.some(error => error.includes('excalidraw.exports')));
   });
 });
 

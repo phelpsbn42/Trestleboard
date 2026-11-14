@@ -559,6 +559,20 @@
         }
       }
     },
+    "excalidraw_diagrams": {
+      "type": "array",
+      "description": "Editable Excalidraw scenes and their displayable SVG exports",
+      "items": {
+        "type": "object",
+        "required": ["name", "scene_path"],
+        "properties": {
+          "name": { "type": "string" },
+          "diagram_type": { "type": "string", "enum": ["c4", "wireframe"] },
+          "scene_path": { "type": "string" },
+          "svg_path": { "type": "string" }
+        }
+      }
+    },
     "wireframes": {
       "type": "object",
       "description": "Wireframe documentation",

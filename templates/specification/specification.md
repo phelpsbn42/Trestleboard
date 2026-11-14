@@ -630,6 +630,19 @@ sequenceDiagram
 
 {{/component_diagrams}}
 
+{{#excalidraw_diagrams}}
+# {{name}}
+
+**Editable source**: [`{{scene_path}}`]({{scene_path}})
+
+{{#svg_path}}
+![{{name}}]({{svg_path}})
+{{/svg_path}}
+
+---
+
+{{/excalidraw_diagrams}}
+
 # Wireframes
 
 ## Navigation Structure

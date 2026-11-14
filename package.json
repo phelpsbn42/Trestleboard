@@ -8,13 +8,15 @@
     "tb-init": "./scripts/init-project.js",
     "tb-validate": "./scripts/validate.js",
     "tb-lint": "./scripts/lint.js",
-    "tb-customize": "./scripts/customize.js"
+    "tb-customize": "./scripts/customize.js",
+    "tb-export-excalidraw": "./scripts/export-excalidraw.js",
+    "tb-export-pdf": "./scripts/export-pdf.js"
   },
   "scripts": {
     "render": "node scripts/render.js",
     "init": "node scripts/init-project.js",
     "validate": "node scripts/validate.js",
-    "test": "node scripts/test-render.js && node scripts/test-validate.js && node scripts/test-init.js && node scripts/test-storage.js && node scripts/test-config.js && node scripts/test-helpers.js && node scripts/test-formatters.js && node scripts/test-cli.js && node scripts/test-personas.js && node scripts/test-customizations.js",
+    "test": "node scripts/test-render.js && node scripts/test-validate.js && node scripts/test-init.js && node scripts/test-storage.js && node scripts/test-config.js && node scripts/test-helpers.js && node scripts/test-formatters.js && node scripts/test-cli.js && node scripts/test-personas.js && node scripts/test-customizations.js && node scripts/test-exporters.js",
     "test:render": "node scripts/test-render.js",
     "test:validate": "node scripts/test-validate.js",
     "test:init": "node scripts/test-init.js",
@@ -27,6 +29,8 @@
     "test:coverage:report": "c8 --reporter=html npm test",
     "lint": "node scripts/lint.js",
     "customize": "node scripts/customize.js",
+    "export:excalidraw": "node scripts/export-excalidraw.js",
+    "export:pdf": "node scripts/export-pdf.js",
     "test:personas": "node scripts/test-personas.js",
     "test:customizations": "node scripts/test-customizations.js"
   },

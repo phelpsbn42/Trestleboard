@@ -39,6 +39,22 @@ artifacts:
   validate_schemas: true
   schemas_path: schemas
 
+# Diagram formats. Each type has one primary format and can have supplemental formats.
+# Excalidraw JSON is editable in Excalidraw; SVG/PNG export requires a renderer integration.
+diagrams:
+  formats:
+    mermaid:
+      c4: primary
+      sequence: primary
+      wireframe: primary
+    excalidraw:
+      c4: supplemental
+      sequence: disabled
+      wireframe: supplemental
+      exports:
+        - json
+        - svg
+
 # Persona settings
 personas:
   path: personas
