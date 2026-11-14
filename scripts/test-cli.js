@@ -7,6 +7,10 @@
  */
 
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
 const { StorageProvider } = require('./storage');
 
 // Test utilities
@@ -110,6 +114,17 @@ class MockStorage extends StorageProvider {
   }
 
   get name() { return 'MockStorage'; }
+}
+
+function makeTempRoot() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'tb-cli-'));
+}
+
+function runCli(script, args, cwd) {
+  return spawnSync(process.execPath, [path.join(__dirname, script), ...args], {
+    cwd,
+    encoding: 'utf8'
+  });
 }
 
 // =============================================================================
@@ -277,6 +292,56 @@ async function runValidateCliTests() {
       assert(result.error.includes('not found'));
     });
   });
+
+  await describe('validate.js command', async () => {
+    await test('validates a data file from the working directory', () => {
+      const root = makeTempRoot();
+      try {
+        fs.mkdirSync(path.join(root, 'schemas'));
+        fs.writeFileSync(
+          path.join(root, 'schemas', 'project-meta.schema.json'),
+          JSON.stringify({
+            type: 'object',
+            required: ['project_name'],
+            properties: { project_name: { type: 'string' } }
+          })
+        );
+        fs.writeFileSync(path.join(root, 'project.json'), JSON.stringify({ project_name: 'example' }));
+
+        const result = runCli('validate.js', ['--data', 'project.json', '--schema', 'project-meta'], root);
+
+        assert.strictEqual(result.status, 0, result.stderr);
+        assert(result.stdout.includes('Validation passed'));
+        assert(result.stdout.includes('Summary:'));
+      } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+      }
+    });
+
+    await test('reports schema validation failures with a non-zero exit code', () => {
+      const root = makeTempRoot();
+      try {
+        fs.mkdirSync(path.join(root, 'schemas'));
+        fs.writeFileSync(
+          path.join(root, 'schemas', 'project-meta.schema.json'),
+          JSON.stringify({
+            type: 'object',
+            required: ['project_name'],
+            properties: { project_name: { type: 'string' } }
+          })
+        );
+        fs.writeFileSync(path.join(root, 'project.json'), JSON.stringify({ project_name: 42 }));
+
+        const result = runCli('validate.js', ['--data', 'project.json', '--schema', 'project-meta', '--verbose'], root);
+
+        assert.strictEqual(result.status, 1);
+        assert(result.stdout.includes('Validation failed'));
+        assert(result.stdout.includes('/project_name'));
+      } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+      }
+    });
+  });
 }
 
 // =============================================================================
@@ -362,6 +427,47 @@ async function runInitCliTests() {
       assert.strictEqual(metadata.description, '');
     });
   });
+
+  await describe('init-project.js command', async () => {
+    await test('creates a project through the command-line interface', () => {
+      const root = makeTempRoot();
+      try {
+        const result = runCli('init-project.js', ['example-project', '--description', 'CLI project'], root);
+
+        assert.strictEqual(result.status, 0, result.stderr);
+        assert(result.stdout.includes('Project initialized successfully!'));
+        assert(fs.existsSync(path.join(root, 'projects', 'example-project', 'project.json')));
+      } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+      }
+    });
+
+    await test('rejects invalid project names through the command-line interface', () => {
+      const root = makeTempRoot();
+      try {
+        const result = runCli('init-project.js', ['Invalid Name'], root);
+
+        assert.strictEqual(result.status, 1);
+        assert(result.stderr.includes('Project name must be lowercase with hyphens only'));
+      } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+      }
+    });
+  });
+}
+
+async function runLintCliTests() {
+  await describe('lint.js command', async () => {
+    await test('reports the current repository as consistent JSON', () => {
+      const root = path.join(__dirname, '..');
+      const result = runCli('lint.js', ['--json'], root);
+
+      assert.strictEqual(result.status, 0, result.stderr);
+      const report = JSON.parse(result.stdout);
+      assert.deepStrictEqual(report.errors, []);
+      assert(report.personas.includes('analyst'));
+    });
+  });
 }
 
 // =============================================================================
@@ -376,6 +482,7 @@ async function runAllTests() {
   await runRenderCliTests();
   await runValidateCliTests();
   await runInitCliTests();
+  await runLintCliTests();
 
   console.log('\n========================================');
   console.log(`Results: ${passCount} passed, ${failCount} failed`);
